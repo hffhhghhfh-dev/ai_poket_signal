@@ -4,486 +4,321 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI POCKET OPTION PRO</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+body{
+ margin:0;padding:16px;background:#080e19;
+ color:white;font-family:Arial,sans-serif
 }
-
-body {
-  margin: 0;
-  padding: 15px;
-  background: #080e19;
-  color: white;
-  font-family: Arial, sans-serif;
+.container{max-width:500px;margin:auto}
+header{text-align:center;padding:15px}
+h1{color:#00e5a0;font-size:23px}
+.card{
+ background:#121e30;border:1px solid #263750;
+ border-radius:14px;padding:16px;margin-bottom:15px
 }
-
-.container {
-  max-width: 500px;
-  margin: auto;
+label{display:block;color:#aabbd1;margin:12px 0 7px}
+select,button{
+ width:100%;padding:13px;border-radius:9px;
+ border:1px solid #344b69;background:#0b1524;
+ color:white;font-size:15px
 }
-
-header {
-  text-align: center;
-  padding: 15px 0;
+button{cursor:pointer}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.market.active,.frame.active{background:#00a878}
+.analyze{
+ background:#00c98b;color:#04150f;
+ border:0;font-weight:bold;margin-top:18px
 }
-
-header h1 {
-  color: #00e5a0;
-  font-size: 24px;
-}
-
-header p {
-  color: #8c9bb1;
-}
-
-.card {
-  background: #121e30;
-  border: 1px solid #263750;
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 8px;
-  color: #aabbd1;
-}
-
-select, button {
-  width: 100%;
-  padding: 13px;
-  border-radius: 9px;
-  border: 1px solid #344b69;
-  background: #0b1524;
-  color: white;
-  font-size: 15px;
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-button {
-  cursor: pointer;
-}
-
-.market-btn.active {
-  background: #00a878;
-  border-color: #00e5a0;
-}
-
-.analyze {
-  background: #00c98b;
-  color: #04150f;
-  border: none;
-  font-weight: bold;
-  font-size: 17px;
-  margin-top: 15px;
-}
-
-.analyze:disabled {
-  opacity: .5;
-}
-
-.result {
-  text-align: center;
-  padding: 20px 10px;
-}
-
-.signal {
-  font-size: 30px;
-  font-weight: bold;
-  margin: 15px 0;
-}
-
-.buy {
-  color: #00e5a0;
-}
-
-.sell {
-  color: #ff5364;
-}
-
-.none {
-  color: #ffca64;
-}
-
-.info {
-  color: #9aacc4;
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.status {
-  color: #00e5a0;
-  text-align: center;
-  font-size: 13px;
-}
-
-footer {
-  text-align: center;
-  color: #61748e;
-  font-size: 12px;
-  padding: 15px;
-}
+.analyze:disabled{opacity:.5}
+.signal{text-align:center;font-size:27px;font-weight:bold;margin:20px 0}
+.buy{color:#00e5a0}
+.sell{color:#ff5364}
+.none{color:#ffca64}
+.info{color:#aabbd1;font-size:14px;line-height:1.8;overflow-wrap:anywhere}
+.status{text-align:center;color:#00e5a0;font-size:13px}
+footer{text-align:center;color:#61748e;font-size:12px;padding:15px}
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
 <header>
-  <h1>AI POCKET OPTION PRO</h1>
-  <p>Интеллектуальный анализ рынка</p>
-  <div class="status" id="status">Система готова</div>
+<h1>AI POCKET OPTION PRO</h1>
+<p>Интеллектуальный анализ рынка</p>
+<div class="status" id="status">Система готова</div>
 </header>
 
 <div class="card">
+<h3>Настройки рынка</h3>
 
-  <label>Выбери рынок</label>
-
-  <div class="row">
-    <button class="market-btn" id="realBtn"
-      onclick="setMarket('forex')">REAL</button>
-
-    <button class="market-btn active" id="otcBtn"
-      onclick="setMarket('otc')">OTC</button>
-  </div>
-
-  <br>
-
-  <label>Валютная пара</label>
-
-  <select id="pair">
-    <option value="EURUSD_otc">EUR/USD OTC</option>
-    <option value="GBPUSD_otc">GBP/USD OTC</option>
-    <option value="USDJPY_otc">USD/JPY OTC</option>
-    <option value="AUDUSD_otc">AUD/USD OTC</option>
-    <option value="EURJPY_otc">EUR/JPY OTC</option>
-    <option value="GBPJPY_otc">GBP/JPY OTC</option>
-    <option value="USDCAD_otc">USD/CAD OTC</option>
-    <option value="USDCHF_otc">USD/CHF OTC</option>
-  </select>
-
-  <br><br>
-
-  <label>Таймфрейм</label>
-
-  <select id="timeframe">
-    <option value="5">S5</option>
-    <option value="15">S15</option>
-    <option value="30">S30</option>
-    <option value="60" selected>M1</option>
-    <option value="300">M5</option>
-  </select>
-
-  <button class="analyze" id="analyzeBtn"
-    onclick="analyzeMarket()">
-    АНАЛИЗИРОВАТЬ
-  </button>
-
+<label>Рынок</label>
+<div class="row">
+<button class="market active" id="otcBtn" onclick="setMarket('otc')">OTC</button>
+<button class="market" id="realBtn" onclick="setMarket('forex')">REAL</button>
 </div>
 
-<div class="card result">
+<label>Валютная пара</label>
+<select id="pair"></select>
 
-  <h3>РЕЗУЛЬТАТ АНАЛИЗА</h3>
+<label>Таймфрейм</label>
+<select id="timeframe">
+<option value="5">S5</option>
+<option value="15">S15</option>
+<option value="30">S30</option>
+<option value="60" selected>M1</option>
+<option value="120">M2</option>
+<option value="180">M3</option>
+<option value="300">M5</option>
+</select>
 
-  <div class="signal none" id="signal">
-    ОЖИДАНИЕ
-  </div>
-
-  <div class="info" id="details">
-    Выбери валютную пару и нажми «Анализировать».
-  </div>
-
+<button class="analyze" id="analyzeBtn" onclick="analyzeMarket()">
+АНАЛИЗИРОВАТЬ
+</button>
 </div>
 
 <div class="card">
-
-  <h3>ТЕХНИЧЕСКИЕ ПОКАЗАТЕЛИ</h3>
-
-  <div class="info" id="indicators">
-    RSI: —<br>
-    EMA 9: —<br>
-    EMA 21: —<br>
-    EMA 50: —<br>
-    MACD: —<br>
-  </div>
-
+<h3>Результат анализа</h3>
+<div class="signal none" id="signal">ОЖИДАНИЕ</div>
+<div class="info" id="details">
+Выбери рынок и валютную пару.
+</div>
 </div>
 
 <div class="card">
+<h3>Технические показатели</h3>
+<div class="info" id="indicators">
+RSI: —<br>EMA 9: —<br>EMA 21: —<br>EMA 50: —<br>MACD: —
+</div>
+</div>
 
-  <h3>РЫНОЧНЫЕ ДАННЫЕ</h3>
-
-  <div class="info" id="marketData">
-    Свечи пока не загружены.
-  </div>
-
+<div class="card">
+<h3>Рыночные данные</h3>
+<div class="info" id="marketData">Свечи не загружены.</div>
 </div>
 
 <footer>
-  AI POCKET OPTION PRO · Аналитическая система
-  <br><br>
-  Сигналы не гарантируют прибыль.
+AI POCKET OPTION PRO<br>
+Аналитика не гарантирует прибыль.
 </footer>
-
 </div>
 
 <script>
-
 const API = "https://ai-poket-signal.onrender.com";
 
 let market = "otc";
 
+const pairs = {
+ otc: [
+  ["EURUSD_otc","EUR/USD OTC"],
+  ["GBPUSD_otc","GBP/USD OTC"],
+  ["USDJPY_otc","USD/JPY OTC"],
+  ["AUDUSD_otc","AUD/USD OTC"],
+  ["EURJPY_otc","EUR/JPY OTC"],
+  ["GBPJPY_otc","GBP/JPY OTC"],
+  ["USDCAD_otc","USD/CAD OTC"],
+  ["USDCHF_otc","USD/CHF OTC"]
+ ],
+ forex: [
+  ["EURUSD","EUR/USD"],
+  ["GBPUSD","GBP/USD"],
+  ["USDJPY","USD/JPY"],
+  ["AUDUSD","AUD/USD"],
+  ["EURJPY","EUR/JPY"],
+  ["GBPJPY","GBP/JPY"],
+  ["USDCAD","USD/CAD"],
+  ["USDCHF","USD/CHF"]
+ ]
+};
+
 function setMarket(type) {
-  market = type;
+ market = type;
 
-  document.getElementById("realBtn")
-    .classList.toggle("active", type === "forex");
+ document.getElementById("otcBtn").classList.toggle("active",type==="otc");
+ document.getElementById("realBtn").classList.toggle("active",type==="forex");
 
-  document.getElementById("otcBtn")
-    .classList.toggle("active", type === "otc");
+ const select = document.getElementById("pair");
+ select.innerHTML = "";
 
-  const pair = document.getElementById("pair");
+ pairs[type].forEach(p=>{
+  const option = document.createElement("option");
+  option.value = p[0];
+  option.textContent = p[1];
+  select.appendChild(option);
+ });
 
-  const pairs = type === "otc"
-    ? [
-      ["EURUSD_otc", "EUR/USD OTC"],
-      ["GBPUSD_otc", "GBP/USD OTC"],
-      ["USDJPY_otc", "USD/JPY OTC"],
-      ["AUDUSD_otc", "AUD/USD OTC"],
-      ["EURJPY_otc", "EUR/JPY OTC"],
-      ["GBPJPY_otc", "GBP/JPY OTC"],
-      ["USDCAD_otc", "USD/CAD OTC"],
-      ["USDCHF_otc", "USD/CHF OTC"]
-    ]
-    : [
-      ["EURUSD", "EUR/USD"],
-      ["GBPUSD", "GBP/USD"],
-      ["USDJPY", "USD/JPY"],
-      ["AUDUSD", "AUD/USD"],
-      ["EURJPY", "EUR/JPY"],
-      ["GBPJPY", "GBP/JPY"],
-      ["USDCAD", "USD/CAD"],
-      ["USDCHF", "USD/CHF"]
-    ];
-
-  pair.innerHTML = "";
-
-  pairs.forEach(item => {
-    const option = document.createElement("option");
-    option.value = item[0];
-    option.textContent = item[1];
-    pair.appendChild(option);
-  });
+ document.getElementById("signal").textContent="ОЖИДАНИЕ";
+ document.getElementById("details").textContent="Настройки изменены.";
 }
+
+setMarket("otc");
 
 function ema(values, period) {
-  const k = 2 / (period + 1);
-
-  let result = values[0];
-
-  for (let i = 1; i < values.length; i++) {
-    result = values[i] * k + result * (1 - k);
-  }
-
-  return result;
+ const k=2/(period+1);
+ let result=values[0];
+ for(let i=1;i<values.length;i++){
+  result=values[i]*k+result*(1-k);
+ }
+ return result;
 }
 
-function calculateRSI(values, period = 14) {
-  if (values.length <= period) return null;
+function rsi(values, period=14) {
+ if(values.length<=period) return null;
 
-  let gains = 0;
-  let losses = 0;
+ let gain=0,loss=0;
 
-  for (let i = values.length - period; i < values.length; i++) {
-    const change = values[i] - values[i - 1];
+ for(let i=values.length-period;i<values.length;i++){
+  const change=values[i]-values[i-1];
+  if(change>0) gain+=change;
+  else loss-=change;
+ }
 
-    if (change > 0) gains += change;
-    else losses -= change;
-  }
+ if(loss===0) return 100;
 
-  if (losses === 0) return 100;
-
-  const rs = gains / losses;
-
-  return 100 - (100 / (1 + rs));
+ const rs=gain/loss;
+ return 100-(100/(1+rs));
 }
 
-function getCandles(data) {
-  let candles = data;
+function parseCandles(data) {
+ let arr=Array.isArray(data)?data:
+  data?.candles || data?.data?.candles ||
+  data?.data || data?.results;
 
-  if (!Array.isArray(candles)) {
-    candles = data?.candles ??
-              data?.data?.candles ??
-              data?.data ??
-              data?.results;
-  }
+ if(!Array.isArray(arr)){
+  throw new Error("API вернул неизвестный формат свечей");
+ }
 
-  if (!Array.isArray(candles)) {
-    throw new Error("Неизвестный формат данных API");
-  }
+ const result=arr.map(c=>({
+  open:Number(c.open??c.o),
+  close:Number(c.close??c.c),
+  high:Number(c.high??c.h),
+  low:Number(c.low??c.l)
+ })).filter(c=>
+  Number.isFinite(c.open)&&
+  Number.isFinite(c.close)&&
+  Number.isFinite(c.high)&&
+  Number.isFinite(c.low)
+ );
 
-  return candles.map(c => ({
-    open: Number(c.open ?? c.o),
-    close: Number(c.close ?? c.c),
-    high: Number(c.high ?? c.h),
-    low: Number(c.low ?? c.l)
-  })).filter(c =>
-    Number.isFinite(c.open) &&
-    Number.isFinite(c.close) &&
-    Number.isFinite(c.high) &&
-    Number.isFinite(c.low)
-  );
+ return result;
 }
 
 async function analyzeMarket() {
+ const button=document.getElementById("analyzeBtn");
+ const signal=document.getElementById("signal");
+ const details=document.getElementById("details");
 
-  const button = document.getElementById("analyzeBtn");
+ button.disabled=true;
+ button.textContent="ЗАГРУЗКА...";
+ signal.textContent="АНАЛИЗ...";
+ signal.className="signal none";
 
-  button.disabled = true;
-  button.textContent = "ЗАГРУЗКА...";
+ document.getElementById("status").textContent="Получение данных...";
 
-  document.getElementById("status").textContent =
-    "Получение рыночных данных...";
+ try {
+  const symbol=document.getElementById("pair").value;
+  const tf=document.getElementById("timeframe").value;
 
-  document.getElementById("signal").textContent =
-    "АНАЛИЗ...";
+  const url=API+"/api/candles?venue="+market+
+   "&symbol="+encodeURIComponent(symbol)+
+   "&tf="+tf+"&limit=100";
 
-  document.getElementById("signal").className =
-    "signal none";
+  const response=await fetch(url);
+  const raw=await response.text();
 
+  let data;
   try {
-
-    const symbol = document.getElementById("pair").value;
-    const tf = document.getElementById("timeframe").value;
-
-    const url = API +
-      "/api/candles?venue=" + market +
-      "&symbol=" + encodeURIComponent(symbol) +
-      "&tf=" + tf +
-      "&limit=100";
-
-    const response = await fetch(url);
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data.error || "Ошибка API: " + response.status
-      );
-    }
-
-    const candles = getCandles(data);
-
-    if (candles.length < 51) {
-      throw new Error(
-        "Недостаточно свечей для анализа: " + candles.length
-      );
-    }
-
-    const closes = candles.map(c => c.close);
-
-    const last = closes[closes.length - 1];
-
-    const rsi = calculateRSI(closes);
-
-    const ema9 = ema(closes, 9);
-    const ema21 = ema(closes, 21);
-    const ema50 = ema(closes, 50);
-
-    const fast = ema(closes, 12);
-    const slow = ema(closes, 26);
-    const macd = fast - slow;
-
-    let buy = 0;
-    let sell = 0;
-
-    if (ema9 > ema21) buy++;
-    else if (ema9 < ema21) sell++;
-
-    if (ema21 > ema50) buy++;
-    else if (ema21 < ema50) sell++;
-
-    if (macd > 0) buy++;
-    else if (macd < 0) sell++;
-
-    if (rsi > 50 && rsi < 70) buy++;
-    else if (rsi < 50 && rsi > 30) sell++;
-
-    let signal = "НЕТ СИГНАЛА";
-    let signalClass = "signal none";
-
-    if (buy >= 3 && buy > sell) {
-      signal = "BUY ↑";
-      signalClass = "signal buy";
-    }
-
-    if (sell >= 3 && sell > buy) {
-      signal = "SELL ↓";
-      signalClass = "signal sell";
-    }
-
-    document.getElementById("signal").textContent = signal;
-
-    document.getElementById("signal").className =
-      signalClass;
-
-    document.getElementById("details").innerHTML =
-      "Пара: " + symbol +
-      "<br>Рынок: " + market.toUpperCase() +
-      "<br>Таймфрейм: " + tf + " секунд" +
-      "<br>Последняя цена: " + last +
-      "<br>BUY: " + buy +
-      "<br>SELL: " + sell;
-
-    document.getElementById("indicators").innerHTML =
-      "RSI (14): " + rsi.toFixed(2) +
-      "<br>EMA 9: " + ema9 +
-      "<br>EMA 21: " + ema21 +
-      "<br>EMA 50: " + ema50 +
-      "<br>MACD: " + macd;
-
-    document.getElementById("marketData").innerHTML =
-      "Получено свечей: " + candles.length +
-      "<br>Последняя цена: " + last +
-      "<br>Максимум последней свечи: " +
-      candles[candles.length - 1].high +
-      "<br>Минимум последней свечи: " +
-      candles[candles.length - 1].low;
-
-    document.getElementById("status").textContent =
-      "Данные успешно получены";
-
-  } catch (error) {
-
-    document.getElementById("signal").textContent =
-      "ОШИБКА";
-
-    document.getElementById("signal").className =
-      "signal none";
-
-    document.getElementById("details").textContent =
-      error.message;
-
-    document.getElementById("status").textContent =
-      "Не удалось выполнить анализ";
-
-  } finally {
-
-    button.disabled = false;
-    button.textContent = "АНАЛИЗИРОВАТЬ";
-
+   data=JSON.parse(raw);
+  } catch {
+   throw new Error("Сервер вернул некорректный ответ. HTTP "+response.status);
   }
+
+  if(!response.ok){
+   const message=data.error || "Ошибка API";
+   const extra=data.details?
+    " — "+JSON.stringify(data.details):"";
+   throw new Error(message+" (HTTP "+response.status+")"+extra);
+  }
+
+  const candles=parseCandles(data);
+
+  if(candles.length<51){
+   throw new Error("Недостаточно свечей: получено "+candles.length+", нужно минимум 51");
+  }
+
+  const closes=candles.map(c=>c.close);
+  const last=closes[closes.length-1];
+
+  const r=rsi(closes);
+  const e9=ema(closes,9);
+  const e21=ema(closes,21);
+  const e50=ema(closes,50);
+  const macd=ema(closes,12)-ema(closes,26);
+
+  let buy=0,sell=0;
+
+  if(e9>e21)buy++; else if(e9<e21)sell++;
+  if(e21>e50)buy++; else if(e21<e50)sell++;
+  if(macd>0)buy++; else if(macd<0)sell++;
+  if(r>50&&r<70)buy++;
+  else if(r<50&&r>30)sell++;
+
+  let result="НЕТ СИГНАЛА";
+  let cls="signal none";
+
+  if(buy>=3&&buy>sell){
+   result="BUY ↑";
+   cls="signal buy";
+  } else if(sell>=3&&sell>buy){
+   result="SELL ↓";
+   cls="signal sell";
+  }
+
+  signal.textContent=result;
+  signal.className=cls;
+
+  details.innerHTML=
+   "Пара: "+symbol+
+   "<br>Рынок: "+market.toUpperCase()+
+   "<br>Таймфрейм: "+tf+" секунд"+
+   "<br>Последняя цена: "+last+
+   "<br>Свечей получено: "+candles.length+
+   "<br>Условные баллы BUY: "+buy+
+   "<br>Условные баллы SELL: "+sell;
+
+  document.getElementById("indicators").innerHTML=
+   "RSI (14): "+r.toFixed(2)+
+   "<br>EMA 9: "+e9+
+   "<br>EMA 21: "+e21+
+   "<br>EMA 50: "+e50+
+   "<br>MACD: "+macd;
+
+  const lastCandle=candles[candles.length-1];
+
+  document.getElementById("marketData").innerHTML=
+   "Open: "+lastCandle.open+
+   "<br>Close: "+lastCandle.close+
+   "<br>High: "+lastCandle.high+
+   "<br>Low: "+lastCandle.low;
+
+  document.getElementById("status").textContent="Данные получены";
+
+ } catch(error) {
+  signal.textContent="ОШИБКА";
+  signal.className="signal none";
+
+  details.textContent=error.message;
+
+  document.getElementById("status").textContent="Ошибка получения данных";
+  document.getElementById("marketData").textContent="Свечи не загружены.";
+ } finally {
+  button.disabled=false;
+  button.textContent="АНАЛИЗИРОВАТЬ";
+ }
 }
-
 </script>
-
 </body>
 </html>
