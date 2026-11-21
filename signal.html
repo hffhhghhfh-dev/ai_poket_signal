@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Pocket Option PRO</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ padding:20px;
+ background:#080d18;
+ color:white;
+ font-family:Arial,sans-serif;
+}
+.header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:25px;
+}
+.logo{font-size:21px;font-weight:bold;color:#35d6a0}
+.card{
+ background:#121c2c;
+ border:1px solid #25344a;
+ border-radius:15px;
+ padding:17px;
+ margin-bottom:17px;
+}
+label{
+ display:block;
+ color:#a8b5c9;
+ margin:15px 0 8px;
+}
+select,button{
+ width:100%;
+ padding:14px;
+ border-radius:10px;
+ border:1px solid #34445b;
+ background:#0b1422;
+ color:white;
+ font-size:16px;
+}
+button{
+ background:#12a879;
+ border:0;
+ font-weight:bold;
+ margin-top:20px;
+}
+.time{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:8px;
+}
+.time button{
+ background:#1c2940;
+ margin:0;
+}
+.time button.active{background:#12a879}
+.signal{
+ text-align:center;
+ padding:25px 10px;
+}
+.status{color:#ffc45b;font-size:17px}
+.small{color:#94a4bb;font-size:13px}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+ <div class="logo">AI POCKET OPTION PRO</div>
+ <div>🤖 AI</div>
+</div>
+
+<div class="card">
+ <h3>👤 Личный кабинет</h3>
+ <p id="userid">Telegram ID: Не подключён</p>
+ <p class="small">Аналитическая платформа</p>
+</div>
+
+<div class="card">
+ <h3>📊 Настройки рынка</h3>
+
+ <label>Выбрать рынок</label>
+ <select id="market">
+  <option value="REAL">REAL</option>
+  <option value="OTC">OTC</option>
+ </select>
+
+ <label>Валютная пара</label>
+ <select id="pair">
+  <option>EUR/USD</option>
+  <option>GBP/USD</option>
+  <option>USD/JPY</option>
+  <option>AUD/USD</option>
+  <option>USD/CAD</option>
+  <option>EUR/GBP</option>
+  <option>EUR/JPY</option>
+  <option>GBP/JPY</option>
+ </select>
+
+ <label>Таймфрейм</label>
+ <div class="time" id="times"></div>
+
+ <button onclick="analyze()">🔍 АНАЛИЗИРОВАТЬ</button>
+</div>
+
+<div class="card signal">
+ <h3>🧠 AI ANALYSIS</h3>
+ <div class="status" id="result">
+  Ожидание подключения котировок
+ </div>
+ <p id="details" class="small">
+  Выбери рынок, валютную пару и время.
+ </p>
+</div>
+
+<div class="card">
+ <h3>📈 Индикаторы</h3>
+ <p>RSI — ожидает данные</p>
+ <p>MACD — ожидает данные</p>
+ <p>EMA 9/21 — ожидает данные</p>
+ <p>Bollinger Bands — ожидает данные</p>
+ <p>Stochastic — ожидает данные</p>
+ <p>Price Action — ожидает данные</p>
+</div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
+
+if(tg.initDataUnsafe?.user?.id){
+ document.getElementById("userid").textContent =
+ "Telegram ID: "+tg.initDataUnsafe.user.id;
+}
+
+const frames = [
+ "S5","S10","S15","S20","S25","S30",
+ "M1","M2","M3","M4","M5"
+];
+
+let selected = "M1";
+
+const box = document.getElementById("times");
+
+frames.forEach(frame=>{
+ const b=document.createElement("button");
+ b.textContent=frame;
+ if(frame===selected)b.classList.add("active");
+
+ b.onclick=()=>{
+  selected=frame;
+  document.querySelectorAll(".time button")
+   .forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+ };
+
+ box.appendChild(b);
+});
+
+function analyze(){
+ const market=document.getElementById("market").value;
+ const pair=document.getElementById("pair").value;
+
+ document.getElementById("result").textContent=
+ "⏳ Источник котировок не подключён";
+
+ document.getElementById("details").textContent=
+ market+" | "+pair+" | "+selected+
+ " — настройки выбраны. Для настоящего сигнала нужны рыночные данные.";
+}
+</script>
+
+</body>
+</html>
