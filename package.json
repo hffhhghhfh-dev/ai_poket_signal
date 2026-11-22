@@ -1,10 +1,13 @@
 {
   "name": "ai-pocket-option-pro",
-  "version": "1.0.0",
-  "description": "AI Pocket Option market analysis server",
+  "version": "2.0.0",
+  "description": "AI Pocket Option Market Analyzer",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
     "express": "^4.21.2",
