@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="theme-color" content="#080d18">
 <title>POCKET AI ULTIMATE PRO</title>
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
@@ -30,8 +31,8 @@ body {
     background:var(--bg);
     color:var(--text);
     font-family:Arial,sans-serif;
-    padding:16px;
-    max-width:600px;
+    padding:15px;
+    max-width:650px;
     margin:auto;
 }
 
@@ -39,23 +40,23 @@ body {
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:22px;
+    margin-bottom:20px;
 }
 
 .logo {
     display:flex;
     align-items:center;
-    gap:11px;
+    gap:10px;
 }
 
 .logo-icon {
     width:43px;
     height:43px;
-    background:linear-gradient(135deg,#087cff,#00e6a0);
     border-radius:13px;
     display:grid;
     place-items:center;
-    font-size:22px;
+    font-size:23px;
+    background:linear-gradient(135deg,#087cff,#00e6a0);
 }
 
 .logo h1 {
@@ -72,7 +73,7 @@ body {
 .status {
     font-size:10px;
     color:var(--gold);
-    padding:8px;
+    padding:9px;
     border-radius:20px;
     background:#ffc85714;
 }
@@ -81,7 +82,7 @@ body {
     background:linear-gradient(135deg,#142c4b,#101a2b);
     border:1px solid #28476d;
     padding:20px;
-    border-radius:20px;
+    border-radius:18px;
     margin-bottom:20px;
 }
 
@@ -113,7 +114,7 @@ body {
 .card {
     background:var(--panel);
     border:1px solid var(--border);
-    border-radius:17px;
+    border-radius:16px;
     padding:16px;
     margin-bottom:14px;
 }
@@ -131,7 +132,7 @@ select {
     background:#0b1423;
     color:white;
     border:1px solid #2b405f;
-    border-radius:11px;
+    border-radius:10px;
     font-size:13px;
 }
 
@@ -152,10 +153,9 @@ select {
     border:1px solid var(--border);
     padding:12px 4px;
     color:#9aadc7;
-    border-radius:10px;
+    border-radius:9px;
     font-size:11px;
     font-weight:700;
-    cursor:pointer;
 }
 
 .tf.active {
@@ -164,17 +164,20 @@ select {
     color:#65a6ff;
 }
 
+button {
+    cursor:pointer;
+}
+
 .analyze-btn {
     width:100%;
     border:0;
     margin-top:17px;
     padding:17px;
-    border-radius:13px;
+    border-radius:12px;
     background:linear-gradient(100deg,#087cff,#00cda0);
     color:white;
     font-size:14px;
     font-weight:900;
-    cursor:pointer;
 }
 
 .analyze-btn:disabled {
@@ -225,12 +228,12 @@ select {
 
 .bar-fill {
     height:100%;
-    width:0%;
+    width:0;
     background:linear-gradient(90deg,#087cff,#00e6a0);
     transition:width .5s;
 }
 
-.indicator,.info-row,.history-item {
+.info-row,.indicator,.history-item {
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -239,8 +242,8 @@ select {
     font-size:11px;
 }
 
-.indicator:last-child,
-.info-row:last-child {
+.info-row:last-child,
+.indicator:last-child {
     border:0;
 }
 
@@ -300,10 +303,11 @@ select {
     color:#53647e;
     font-size:9px;
     padding:25px 0 12px;
+    line-height:1.8;
 }
 
 @media(max-width:360px) {
-    body {padding:11px}
+    body {padding:10px}
 }
 </style>
 </head>
@@ -322,9 +326,12 @@ select {
 </header>
 
 <section class="hero">
-    <div class="hero-label">ARTIFICIAL INTELLIGENCE TERMINAL</div>
+    <div class="hero-label">MARKET ANALYSIS TERMINAL</div>
     <h2>Smart Market Analysis</h2>
-    <p>Анализ Pocket Option OTC с использованием технических индикаторов и искусственного интеллекта.</p>
+    <p>
+        Анализ рыночных свечей, тренда, RSI, EMA,
+        MACD и Price Action.
+    </p>
 </section>
 
 <div class="section-title">01 / ВЫБОР РЫНКА</div>
@@ -334,15 +341,15 @@ select {
         <div>
             <label>Тип рынка</label>
             <select id="marketType">
-                <option value="OTC">OTC MARKET</option>
-                <option value="REGULAR">REGULAR MARKET</option>
+                <option value="otc">OTC MARKET</option>
+                <option value="forex">FOREX MARKET</option>
             </select>
         </div>
 
         <div>
             <label>Валютная пара</label>
             <select id="pair">
-                <option value="">Загрузка пар...</option>
+                <option value="">Загрузка...</option>
             </select>
         </div>
     </div>
@@ -351,17 +358,23 @@ select {
 <div class="section-title">02 / ТАЙМФРЕЙМ</div>
 
 <div class="card">
+
     <div class="tf-grid" id="timeframes">
-        <button class="tf active" data-value="5s">5 SEC</button>
-        <button class="tf" data-value="15s">15 SEC</button>
-        <button class="tf" data-value="30s">30 SEC</button>
-        <button class="tf" data-value="1m">1 MIN</button>
-        <button class="tf" data-value="3m">3 MIN</button>
-        <button class="tf" data-value="5m">5 MIN</button>
-        <button class="tf" data-value="10m">10 MIN</button>
-        <button class="tf" data-value="15m">15 MIN</button>
-        <button class="tf" data-value="20m">20 MIN</button>
-        <button class="tf" data-value="30m">30 MIN</button>
+
+        <button class="tf active" data-value="5">5 SEC</button>
+        <button class="tf" data-value="15">15 SEC</button>
+        <button class="tf" data-value="30">30 SEC</button>
+
+        <button class="tf" data-value="60">1 MIN</button>
+        <button class="tf" data-value="180">3 MIN</button>
+        <button class="tf" data-value="300">5 MIN</button>
+
+        <button class="tf" data-value="600">10 MIN</button>
+        <button class="tf" data-value="900">15 MIN</button>
+        <button class="tf" data-value="1200">20 MIN</button>
+
+        <button class="tf" data-value="1800">30 MIN</button>
+
     </div>
 
     <button class="analyze-btn" id="analyze">
@@ -369,14 +382,16 @@ select {
     </button>
 
     <div class="error" id="error"></div>
+
 </div>
 
 <section class="result" id="result">
 
-    <div class="section-title">03 / AI SIGNAL</div>
+    <div class="section-title">03 / MARKET SIGNAL</div>
 
     <div class="signal-box">
-        <div class="signal-desc">AI MARKET DIRECTION</div>
+
+        <div class="signal-desc">MARKET DIRECTION</div>
 
         <div class="signal none" id="signal">WAIT</div>
 
@@ -386,16 +401,18 @@ select {
 
         <div class="confidence" id="confidence">--%</div>
 
-        <div class="signal-desc">Уверенность модели</div>
+        <div class="signal-desc">Техническая оценка</div>
 
         <div class="bar">
             <div class="bar-fill" id="confidenceBar"></div>
         </div>
+
     </div>
 
     <div class="section-title">04 / MARKET INFORMATION</div>
 
     <div class="card">
+
         <div class="info-row">
             <span>Валютная пара</span>
             <strong id="resultPair">--</strong>
@@ -417,24 +434,31 @@ select {
         </div>
 
         <div class="info-row">
-            <span>BUY</span>
+            <span>BUY баллы</span>
             <strong id="buyCount">--</strong>
         </div>
 
         <div class="info-row">
-            <span>SELL</span>
+            <span>SELL баллы</span>
             <strong id="sellCount">--</strong>
         </div>
+
+        <div class="info-row">
+            <span>Получено свечей</span>
+            <strong id="candleCount">--</strong>
+        </div>
+
     </div>
 
-    <div class="section-title">05 / INDICATORS</div>
+    <div class="section-title">05 / TECHNICAL INDICATORS</div>
 
     <div class="card" id="indicators"></div>
 
-    <div class="section-title">06 / AI EXPLANATION</div>
+    <div class="section-title">06 / PRICE ACTION</div>
 
     <div class="card">
-        <p id="explanation" style="font-size:12px;line-height:1.8;color:#aabbd1">
+        <p id="explanation"
+           style="font-size:12px;line-height:1.8;color:#aabbd1">
             Ожидание анализа...
         </p>
     </div>
@@ -451,10 +475,17 @@ select {
 
 <footer class="footer">
     POCKET AI ULTIMATE PRO © 2026<br>
-    ANALYTICAL SYSTEM • NOT FINANCIAL ADVICE
+    TECHNICAL ANALYSIS • NOT FINANCIAL ADVICE
 </footer>
 
 <script>
+
+"use strict";
+
+// =====================================
+// TELEGRAM
+// =====================================
+
 const tg = window.Telegram?.WebApp;
 
 if (tg) {
@@ -462,23 +493,24 @@ if (tg) {
     tg.expand();
 }
 
+// =====================================
+// CONFIGURATION
+// =====================================
+
 const API = "";
 
-let selectedTF = "5s";
+let selectedTF = 5;
 let historyData = [];
 
 const $ = id => document.getElementById(id);
 
-function setConnection(online) {
-    $("connection").textContent =
-        online ? "SERVER ONLINE" : "SERVER OFFLINE";
+// =====================================
+// API REQUEST
+// =====================================
 
-    $("connection").style.color =
-        online ? "#00e6a0" : "#ff5577";
-}
+async function requestAPI(url, options = {}) {
 
-async function requestAPI(path, options = {}) {
-    const response = await fetch(API + path, {
+    const response = await fetch(API + url, {
         ...options,
         headers: {
             "Content-Type": "application/json",
@@ -501,292 +533,758 @@ async function requestAPI(path, options = {}) {
     return data;
 }
 
-function readablePair(symbol) {
-    if (typeof symbol !== "string") return "";
+// =====================================
+// CONNECTION
+// =====================================
 
-    if (symbol.endsWith("_otc")) {
-        const pair = symbol.replace("_otc", "");
-        return pair.slice(0,3) + "/" + pair.slice(3) + " OTC";
+function setConnection(online) {
+
+    $("connection").textContent =
+        online ? "SERVER ONLINE" : "SERVER OFFLINE";
+
+    $("connection").style.color =
+        online ? "#00e6a0" : "#ff5577";
+}
+
+async function checkServer() {
+
+    try {
+        await requestAPI("/api/health");
+        setConnection(true);
+    } catch {
+        setConnection(false);
+    }
+}
+
+// =====================================
+// PAIR NAME
+// =====================================
+
+function readablePair(symbol) {
+
+    if (typeof symbol !== "string") {
+        return String(symbol || "");
     }
 
-    if (symbol.length === 6) {
-        return symbol.slice(0,3) + "/" + symbol.slice(3);
+    if (symbol.toLowerCase().endsWith("_otc")) {
+
+        const pair = symbol.slice(0, -4);
+
+        return pair.slice(0,3) +
+            "/" + pair.slice(3) + " OTC";
+    }
+
+    if (/^[A-Za-z]{6}$/.test(symbol)) {
+
+        return symbol.slice(0,3) +
+            "/" + symbol.slice(3);
     }
 
     return symbol;
 }
 
-// Получение пар непосредственно с сервера
-async function loadSymbols() {
-    const type = $("marketType").value;
-    const pairSelect = $("pair");
+// =====================================
+// LOAD SYMBOLS
+// =====================================
 
-    pairSelect.innerHTML = "<option>Загрузка...</option>";
-    pairSelect.disabled = true;
+function extractSymbols(data) {
 
-    try {
-        const data = await requestAPI(
-            "/api/symbols?marketType=" + encodeURIComponent(type)
+    let list =
+        data.symbols ||
+        data.data?.symbols ||
+        data.result?.symbols;
+
+    if (!Array.isArray(list)) {
+        throw new Error(
+            "OTCharts не вернул список валютных пар"
         );
+    }
 
-        if (!Array.isArray(data.symbols) || !data.symbols.length) {
-            throw new Error("Список валютных пар пуст");
+    return list.map(item => {
+
+        if (typeof item === "string") {
+            return {
+                symbol: item,
+                name: readablePair(item)
+            };
         }
 
-        pairSelect.innerHTML = "";
+        return {
+            symbol: item.symbol || item.name,
+            name: item.name || item.symbol
+        };
 
-        data.symbols.forEach(item => {
-            const symbol =
-                typeof item === "string"
-                    ? item
-                    : item.symbol;
+    }).filter(item => item.symbol);
+}
 
-            if (!symbol) return;
+async function loadSymbols() {
+
+    const venue = $("marketType").value;
+    const select = $("pair");
+
+    select.disabled = true;
+    select.innerHTML = "<option>Загрузка пар...</option>";
+
+    try {
+
+        const data = await requestAPI(
+            "/api/symbols?venue=" +
+            encodeURIComponent(venue)
+        );
+
+        const symbols = extractSymbols(data);
+
+        select.innerHTML = "";
+
+        symbols.forEach(item => {
 
             const option = document.createElement("option");
 
-            // ВАЖНО: сервер получает оригинальный symbol
-            option.value = symbol;
+            option.value = item.symbol;
+            option.textContent = item.name;
 
-            option.textContent =
-                (typeof item === "object" && item.name)
-                    ? item.name
-                    : readablePair(symbol);
+            select.appendChild(option);
 
-            pairSelect.appendChild(option);
         });
 
-        if (!pairSelect.options.length) {
-            throw new Error("Не удалось загрузить пары");
+        if (!select.options.length) {
+            throw new Error("Нет доступных валютных пар");
         }
 
-        pairSelect.disabled = false;
+        select.disabled = false;
 
     } catch (error) {
-        pairSelect.innerHTML =
-            '<option value="">Ошибка загрузки</option>';
+
+        select.innerHTML =
+            '<option value="">Ошибка загрузки пар</option>';
 
         throw error;
     }
 }
 
-// Проверка сервера
-async function checkServer() {
-    try {
-        await requestAPI("/api/health");
-        setConnection(true);
-    } catch (error) {
-        setConnection(false);
-    }
-}
+// =====================================
+// TIMEFRAMES
+// =====================================
 
-// Таймфреймы
 document.querySelectorAll(".tf").forEach(button => {
+
     button.addEventListener("click", () => {
+
         document.querySelectorAll(".tf").forEach(item => {
             item.classList.remove("active");
         });
 
         button.classList.add("active");
-        selectedTF = button.dataset.value;
+
+        selectedTF = Number(button.dataset.value);
+
     });
+
 });
 
-// Отображение индикаторов
-function renderIndicators(indicators) {
-    const container = $("indicators");
-    container.innerHTML = "";
+// =====================================
+// CANDLE NORMALIZATION
+// =====================================
 
-    if (!indicators || typeof indicators !== "object") {
-        container.textContent = "Данные индикаторов отсутствуют";
-        return;
+function normalizeCandles(data) {
+
+    const raw =
+        data.candles ||
+        data.data?.candles ||
+        data.result?.candles;
+
+    if (!Array.isArray(raw)) {
+        throw new Error("OTCharts не вернул свечи");
     }
 
-    const names = {
-        RSI:"RSI",
-        MACD:"MACD",
-        EMA:"EMA",
-        EMA200:"EMA 50/200",
-        BB:"Bollinger Bands",
-        STOCH:"Stochastic RSI",
-        ADX:"ADX",
-        CCI:"CCI",
-        WILLR:"Williams %R",
-        ATR:"ATR"
+    const candles = raw.map(c => {
+
+        const open = Number(c.open ?? c.o);
+        const high = Number(c.high ?? c.h);
+        const low = Number(c.low ?? c.l);
+        const close = Number(c.close ?? c.c);
+
+        const volume = Number(c.volume ?? c.v ?? 0);
+
+        return {
+            time: c.time ?? c.timestamp ?? c.t ?? null,
+            open,
+            high,
+            low,
+            close,
+            volume
+        };
+
+    }).filter(c =>
+        Number.isFinite(c.open) &&
+        Number.isFinite(c.high) &&
+        Number.isFinite(c.low) &&
+        Number.isFinite(c.close)
+    );
+
+    if (candles.length < 30) {
+        throw new Error(
+            "Недостаточно свечей для анализа. Получено: " +
+            candles.length
+        );
+    }
+
+    return candles;
+}
+
+// =====================================
+// EMA
+// =====================================
+
+function EMA(values, period) {
+
+    if (values.length < period) {
+        return null;
+    }
+
+    const multiplier = 2 / (period + 1);
+
+    let ema = values
+        .slice(0, period)
+        .reduce((a,b) => a + b, 0) / period;
+
+    for (let i = period; i < values.length; i++) {
+
+        ema =
+            values[i] * multiplier +
+            ema * (1 - multiplier);
+
+    }
+
+    return ema;
+}
+
+// =====================================
+// RSI
+// =====================================
+
+function RSI(values, period = 14) {
+
+    if (values.length <= period) {
+        return null;
+    }
+
+    let gains = 0;
+    let losses = 0;
+
+    for (let i = values.length - period; i < values.length; i++) {
+
+        const change = values[i] - values[i - 1];
+
+        if (change > 0) gains += change;
+        else losses += Math.abs(change);
+
+    }
+
+    if (losses === 0) return 100;
+
+    const rs = gains / losses;
+
+    return 100 - (100 / (1 + rs));
+}
+
+// =====================================
+// MACD
+// =====================================
+
+function MACD(values) {
+
+    const fast = EMA(values, 12);
+    const slow = EMA(values, 26);
+
+    if (fast === null || slow === null) {
+        return null;
+    }
+
+    return fast - slow;
+}
+
+// =====================================
+// ANALYSIS ENGINE
+// =====================================
+
+function analyzeCandles(candles) {
+
+    const closes = candles.map(c => c.close);
+
+    const last = candles[candles.length - 1];
+    const previous = candles[candles.length - 2];
+
+    const ema20 = EMA(closes, 20);
+    const ema50 = EMA(closes, 50);
+    const ema200 = EMA(closes, 200);
+
+    const rsi = RSI(closes, 14);
+    const macd = MACD(closes);
+
+    let buy = 0;
+    let sell = 0;
+
+    const indicators = [];
+
+    function addIndicator(name, signal, value) {
+
+        indicators.push({
+            name,
+            signal,
+            value
+        });
+
+        if (signal === "BUY") buy++;
+        if (signal === "SELL") sell++;
+    }
+
+    // EMA 20
+
+    if (ema20 !== null) {
+
+        addIndicator(
+            "EMA 20",
+            last.close > ema20 ? "BUY" :
+            last.close < ema20 ? "SELL" : "NEUTRAL",
+            ema20
+        );
+
+    }
+
+    // EMA 50
+
+    if (ema50 !== null) {
+
+        addIndicator(
+            "EMA 50",
+            last.close > ema50 ? "BUY" :
+            last.close < ema50 ? "SELL" : "NEUTRAL",
+            ema50
+        );
+
+    }
+
+    // EMA 200
+
+    if (ema200 !== null) {
+
+        addIndicator(
+            "EMA 200",
+            last.close > ema200 ? "BUY" :
+            last.close < ema200 ? "SELL" : "NEUTRAL",
+            ema200
+        );
+
+    }
+
+    // RSI
+
+    if (rsi !== null) {
+
+        addIndicator(
+            "RSI 14",
+            rsi < 30 ? "BUY" :
+            rsi > 70 ? "SELL" : "NEUTRAL",
+            rsi.toFixed(2)
+        );
+
+    }
+
+    // MACD
+
+    if (macd !== null) {
+
+        addIndicator(
+            "MACD",
+            macd > 0 ? "BUY" :
+            macd < 0 ? "SELL" : "NEUTRAL",
+            macd.toFixed(6)
+        );
+
+    }
+
+    // Candle direction
+
+    addIndicator(
+        "LAST CANDLE",
+        last.close > last.open ? "BUY" :
+        last.close < last.open ? "SELL" : "NEUTRAL",
+        last.close.toString()
+    );
+
+    // Price action
+
+    const body = Math.abs(last.close - last.open);
+
+    const range = last.high - last.low;
+
+    const upperWick =
+        last.high - Math.max(last.open, last.close);
+
+    const lowerWick =
+        Math.min(last.open, last.close) - last.low;
+
+    let pattern = "Обычная свеча";
+
+    if (range > 0 && lowerWick > body * 2) {
+        pattern = "Длинная нижняя тень";
+    }
+
+    if (range > 0 && upperWick > body * 2) {
+        pattern = "Длинная верхняя тень";
+    }
+
+    if (last.close > previous.high) {
+        pattern = "Пробой максимума предыдущей свечи";
+        buy++;
+    }
+
+    if (last.close < previous.low) {
+        pattern = "Пробой минимума предыдущей свечи";
+        sell++;
+    }
+
+    // Trend
+
+    let trend = "Боковое движение";
+
+    if (ema20 !== null && ema50 !== null) {
+
+        if (ema20 > ema50 && last.close > ema20) {
+            trend = "ВОСХОДЯЩИЙ";
+        }
+
+        if (ema20 < ema50 && last.close < ema20) {
+            trend = "НИСХОДЯЩИЙ";
+        }
+
+    }
+
+    // Signal
+
+    let signal = "NO SIGNAL";
+
+    if (buy >= 4 && buy > sell + 1) {
+        signal = "BUY";
+    }
+
+    if (sell >= 4 && sell > buy + 1) {
+        signal = "SELL";
+    }
+
+    const total = buy + sell;
+
+    const confidence = total
+        ? Math.round(
+            Math.abs(buy - sell) / total * 100
+        )
+        : 0;
+
+    let explanation =
+        "Технические показатели не дают согласованного направления. " +
+        "Лучше дождаться следующего подтверждения.";
+
+    if (signal === "BUY") {
+
+        explanation =
+            "Преобладают бычьи технические сигналы. " +
+            "Тренд: " + trend + ". " +
+            "RSI: " + (rsi?.toFixed(2) ?? "нет данных") +
+            ". Price Action: " + pattern + ".";
+    }
+
+    if (signal === "SELL") {
+
+        explanation =
+            "Преобладают медвежьи технические сигналы. " +
+            "Тренд: " + trend + ". " +
+            "RSI: " + (rsi?.toFixed(2) ?? "нет данных") +
+            ". Price Action: " + pattern + ".";
+    }
+
+    return {
+        signal,
+        confidence,
+        buy,
+        sell,
+        trend,
+        price: last.close,
+        rsi,
+        pattern,
+        explanation,
+        indicators
     };
+}
 
-    Object.entries(indicators).forEach(([key, value]) => {
-        const direction = String(
-            value?.signal || "NEUTRAL"
-        ).toUpperCase();
+// =====================================
+// RENDER INDICATORS
+// =====================================
 
-        const cls =
-            direction === "BUY" ? "buy" :
-            direction === "SELL" ? "sell" : "neutral";
+function renderIndicators(indicators) {
+
+    const container = $("indicators");
+
+    container.innerHTML = "";
+
+    indicators.forEach(item => {
 
         const row = document.createElement("div");
         row.className = "indicator";
 
         const name = document.createElement("span");
-        name.textContent = names[key] || key;
+        name.textContent = item.name;
+
+        const right = document.createElement("div");
+
+        const value = document.createElement("small");
+        value.style.color = "#8293ad";
+        value.style.marginRight = "9px";
+        value.textContent = item.value;
 
         const badge = document.createElement("span");
-        badge.className = "badge " + cls;
-        badge.textContent = direction;
 
-        row.append(name, badge);
+        badge.className =
+            "badge " +
+            (item.signal === "BUY" ? "buy" :
+             item.signal === "SELL" ? "sell" : "neutral");
+
+        badge.textContent = item.signal;
+
+        right.append(value, badge);
+        row.append(name, right);
+
         container.appendChild(row);
+
     });
+
 }
 
-// История
-function addHistory(data) {
-    historyData.unshift(data);
+// =====================================
+// RESULT
+// =====================================
+
+function displayResult(result, pair, timeframe, count) {
+
+    $("result").style.display = "block";
+
+    $("signal").textContent = result.signal;
+
+    $("signal").className =
+        "signal " +
+        (result.signal === "BUY" ? "buy" :
+         result.signal === "SELL" ? "sell" : "none");
+
+    $("signalText").textContent =
+        result.signal === "NO SIGNAL"
+            ? "Нет достаточного подтверждения"
+            : "Техническое направление рынка";
+
+    $("confidence").textContent =
+        result.confidence + "%";
+
+    $("confidenceBar").style.width =
+        result.confidence + "%";
+
+    $("resultPair").textContent =
+        readablePair(pair);
+
+    $("resultTF").textContent =
+        timeframe + " секунд";
+
+    $("price").textContent =
+        result.price;
+
+    $("trend").textContent =
+        result.trend;
+
+    $("buyCount").textContent =
+        result.buy;
+
+    $("sellCount").textContent =
+        result.sell;
+
+    $("candleCount").textContent =
+        count;
+
+    $("explanation").textContent =
+        result.explanation;
+
+    renderIndicators(result.indicators);
+
+    addHistory({
+        pair: readablePair(pair),
+        timeframe,
+        signal: result.signal
+    });
+
+    $("result").scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+    });
+
+}
+
+// =====================================
+// HISTORY
+// =====================================
+
+function addHistory(item) {
+
+    historyData.unshift(item);
+
     historyData = historyData.slice(0, 10);
 
     $("history").innerHTML = "";
 
-    historyData.forEach(item => {
+    historyData.forEach(entry => {
+
         const row = document.createElement("div");
+
         row.className = "history-item";
 
         const left = document.createElement("span");
+
         left.textContent =
-            item.pair + " • " + item.timeframe;
+            entry.pair + " • " + entry.timeframe + "s";
 
         const right = document.createElement("strong");
-        right.textContent = item.signal;
+
+        right.textContent = entry.signal;
 
         right.style.color =
-            item.signal === "BUY" ? "#00e6a0" :
-            item.signal === "SELL" ? "#ff5577" :
+            entry.signal === "BUY" ? "#00e6a0" :
+            entry.signal === "SELL" ? "#ff5577" :
             "#ffc857";
 
         row.append(left, right);
+
         $("history").appendChild(row);
+
     });
+
 }
 
-// Отображение результата
-function displayResult(data) {
-    const signal = String(
-        data.signal || "NO SIGNAL"
-    ).toUpperCase();
+// =====================================
+// ANALYZE MARKET
+// =====================================
 
-    $("result").style.display = "block";
-
-    $("signal").textContent = signal;
-
-    $("signal").className =
-        "signal " +
-        (signal === "BUY" ? "buy" :
-         signal === "SELL" ? "sell" : "none");
-
-    $("signalText").textContent =
-        data.signalReason || "Результат технического анализа";
-
-    const confidence = Math.max(
-        0,
-        Math.min(100, Number(data.confidence) || 0)
-    );
-
-    $("confidence").textContent = confidence + "%";
-    $("confidenceBar").style.width = confidence + "%";
-
-    $("resultPair").textContent =
-        readablePair(data.pair) || data.pair || "--";
-
-    $("resultTF").textContent = data.timeframe || selectedTF;
-    $("price").textContent = data.price ?? "--";
-    $("trend").textContent = data.trend || "--";
-    $("buyCount").textContent = data.buyCount ?? "--";
-    $("sellCount").textContent = data.sellCount ?? "--";
-
-    $("explanation").textContent =
-        data.explanation || "Нет дополнительного объяснения.";
-
-    renderIndicators(data.indicators);
-
-    addHistory({
-        pair: readablePair(data.pair) || data.pair,
-        timeframe: data.timeframe || selectedTF,
-        signal
-    });
-
-    $("result").scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
-}
-
-// Анализ рынка
 $("analyze").addEventListener("click", async () => {
+
     const button = $("analyze");
 
     const pair = $("pair").value;
-    const marketType = $("marketType").value;
+
+    const venue = $("marketType").value;
 
     if (!pair) {
-        $("error").textContent = "Выберите валютную пару";
+
+        $("error").textContent =
+            "Сначала выберите валютную пару";
+
         $("error").style.display = "block";
+
         return;
     }
 
     button.disabled = true;
+
     button.innerHTML =
-        '<span class="loader"></span> ANALYZING MARKET...';
+        '<span class="loader"></span> ANALYZING...';
 
     $("error").style.display = "none";
 
     try {
-        const data = await requestAPI("/api/analyze", {
-            method: "POST",
-            body: JSON.stringify({
-                pair: pair,
-                marketType: marketType,
-                timeframe: selectedTF
-            })
-        });
 
-        displayResult(data);
+        const url =
+            "/api/candles?venue=" +
+            encodeURIComponent(venue) +
+            "&symbol=" +
+            encodeURIComponent(pair) +
+            "&tf=" + selectedTF +
+            "&limit=300";
+
+        const data = await requestAPI(url);
+
+        const candles = normalizeCandles(data);
+
+        const result = analyzeCandles(candles);
+
+        displayResult(
+            result,
+            pair,
+            selectedTF,
+            candles.length
+        );
+
         setConnection(true);
 
     } catch (error) {
-        $("error").textContent = error.message;
+
+        $("error").textContent =
+            error.message;
+
         $("error").style.display = "block";
+
     } finally {
+
         button.disabled = false;
-        button.textContent = "✦ ANALYZE MARKET";
+
+        button.textContent =
+            "✦ ANALYZE MARKET";
+
     }
+
 });
 
-// Изменение рынка
+// =====================================
+// MARKET CHANGE
+// =====================================
+
 $("marketType").addEventListener("change", async () => {
+
     $("error").style.display = "none";
 
     try {
+
         await loadSymbols();
+
     } catch (error) {
+
         $("error").textContent = error.message;
+
         $("error").style.display = "block";
+
     }
+
 });
 
-// Запуск
+// =====================================
+// INITIALIZATION
+// =====================================
+
 async function init() {
-    await checkServer();
 
     try {
+
+        await checkServer();
+
         await loadSymbols();
+
     } catch (error) {
+
         $("error").textContent = error.message;
+
         $("error").style.display = "block";
+
     }
+
 }
 
 init();
 
 setInterval(checkServer, 15000);
+
 </script>
 
 </body>
