@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POCKET AI ULTIMATE PRO</title>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 18px;
+    background: #080e19;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+    font-size: 23px;
+    color: #36c9ff;
+}
+
+.status {
+    text-align: center;
+    color: #36df9a;
+    margin-bottom: 22px;
+}
+
+.card {
+    background: #111c2c;
+    border: 1px solid #26364c;
+    border-radius: 14px;
+    padding: 17px;
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    color: #aabbd1;
+    margin-bottom: 9px;
+}
+
+select, button {
+    width: 100%;
+    padding: 15px;
+    border-radius: 9px;
+    border: 1px solid #344961;
+    background: #0a1422;
+    color: white;
+    font-size: 16px;
+}
+
+button {
+    background: #087fd4;
+    border: none;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+button:disabled {
+    opacity: .5;
+}
+
+.signal {
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.buy {
+    color: #23e69b;
+}
+
+.sell {
+    color: #ff5269;
+}
+
+.neutral {
+    color: #ffc857;
+}
+
+.indicator {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #26364c;
+}
+
+.message {
+    color: #ffbd58;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.small {
+    color: #8296af;
+    font-size: 12px;
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>POCKET AI ULTIMATE PRO</h1>
+<div class="status">● SERVER ONLINE</div>
+
+<div class="card">
+    <label>Доступные Pocket Option OTC пары</label>
+    <select id="pairSelect">
+        <option value="">Загрузка пар...</option>
+    </select>
+
+    <br><br>
+
+    <label>Таймфрейм</label>
+    <select id="tfSelect">
+        <option value="5">5 секунд</option>
+        <option value="15">15 секунд</option>
+        <option value="30">30 секунд</option>
+        <option value="60" selected>1 минута</option>
+        <option value="120">2 минуты</option>
+        <option value="180">3 минуты</option>
+        <option value="300">5 минут</option>
+        <option value="600">10 минут</option>
+        <option value="900">15 минут</option>
+        <option value="1800">30 минут</option>
+    </select>
+
+    <button id="analyzeBtn" onclick="analyzeMarket()">
+        АНАЛИЗИРОВАТЬ РЫНОК
+    </button>
+</div>
+
+<div class="card">
+    <div style="text-align:center;color:#9aafc8">
+        НАПРАВЛЕНИЕ РЫНКА
+    </div>
+
+    <div id="direction" class="signal neutral">
+        WAITING
+    </div>
+
+    <div id="price" class="indicator">
+        <span>Цена</span><span>—</span>
+    </div>
+
+    <div id="confidence" class="indicator">
+        <span>Согласованность индикаторов</span><span>—</span>
+    </div>
+
+    <div id="rsi" class="indicator">
+        <span>RSI</span><span>—</span>
+    </div>
+
+    <div id="ema" class="indicator">
+        <span>EMA 9 / EMA 21</span><span>—</span>
+    </div>
+
+    <div id="macd" class="indicator">
+        <span>MACD</span><span>—</span>
+    </div>
+
+    <p id="explanation" class="message">
+        Выберите пару и нажмите «Анализировать рынок».
+    </p>
+</div>
+
+<div class="small">
+    Анализ основан на свечах Pocket Option OTC.
+    Сигналы не гарантируют результат.
+</div>
+
+</div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+
+if (tg) {
+    tg.ready();
+    tg.expand();
+}
+
+async function loadPairs() {
+    const select = document.getElementById("pairSelect");
+
+    try {
+        const response = await fetch("/api/symbols");
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.error);
+        }
+
+        select.innerHTML = "";
+
+        if (!data.symbols.length) {
+            select.innerHTML =
+                '<option value="">Нет открытых OTC-пар</option>';
+            return;
+        }
+
+        data.symbols.forEach(pair => {
+            const option = document.createElement("option");
+
+            option.value = pair.symbol;
+            option.textContent = pair.name;
+
+            select.appendChild(option);
+        });
+
+    } catch (error) {
+        select.innerHTML =
+            '<option value="">Ошибка загрузки пар</option>';
+
+        document.getElementById("explanation").textContent =
+            error.message;
+    }
+}
+
+async function analyzeMarket() {
+    const symbol = document.getElementById("pairSelect").value;
+    const tf = document.getElementById("tfSelect").value;
+    const button = document.getElementById("analyzeBtn");
+
+    if (!symbol) {
+        alert("Сначала выберите доступную OTC-пару");
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "АНАЛИЗИРУЮ...";
+
+    try {
+        const url =
+            `/api/analyze?symbol=${encodeURIComponent(symbol)}&tf=${tf}`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.error);
+        }
+
+        const direction = document.getElementById("direction");
+
+        direction.textContent = data.direction;
+        direction.className = "signal " +
+            (data.direction === "BUY"
+                ? "buy"
+                : data.direction === "SELL"
+                ? "sell"
+                : "neutral");
+
+        document.getElementById("price").innerHTML =
+            `<span>Цена</span><span>${data.price}</span>`;
+
+        document.getElementById("confidence").innerHTML =
+            `<span>Согласованность индикаторов</span>
+             <span>${data.confidence}%</span>`;
+
+        document.getElementById("rsi").innerHTML =
+            `<span>RSI</span><span>${data.indicators.rsi}</span>`;
+
+        document.getElementById("ema").innerHTML =
+            `<span>EMA 9 / EMA 21</span>
+             <span>${data.indicators.ema9} / ${data.indicators.ema21}</span>`;
+
+        document.getElementById("macd").innerHTML =
+            `<span>MACD</span><span>${data.indicators.macd}</span>`;
+
+        document.getElementById("explanation").textContent =
+            data.explanation;
+
+    } catch (error) {
+        document.getElementById("explanation").textContent =
+            "Ошибка: " + error.message;
+    }
+
+    button.disabled = false;
+    button.textContent = "АНАЛИЗИРОВАТЬ РЫНОК";
+}
+
+loadPairs();
+</script>
+
+</body>
+</html>
