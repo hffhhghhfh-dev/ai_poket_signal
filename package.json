@@ -1,16 +1,20 @@
 {
-  "name": "ai-pocket-option-pro",
+  "name": "pocket-ai-ultimate-pro",
   "version": "2.0.0",
-  "description": "AI Pocket Option Market Analyzer",
+  "description": "AI market analysis for Pocket Option",
   "main": "server.js",
+  "type": "commonjs",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node --watch server.js"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "dependencies": {
-    "express": "^4.21.2",
-    "cors": "^2.8.5"
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
   }
 }
