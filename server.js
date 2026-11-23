@@ -32,9 +32,10 @@ const INTERVALS = {
   "60": "1h"
 };
 
+// Получение свечей от Twelve Data
 async function getMarketData(symbol, interval) {
   if (!API_KEY) {
-    throw new Error("Twelve Data API key не настроен");
+    throw new Error("Twelve Data API key не настроен на Render");
   }
 
   const params = new URLSearchParams({
@@ -42,74 +43,115 @@ async function getMarketData(symbol, interval) {
     interval,
     outputsize: "100",
     apikey: API_KEY,
-    timezone: "UTC"
+    timezone: "UTC",
+    order: "ASC"
   });
 
-  const response = await fetch(
-    "https://api.twelvedata.com/time_series?" + params
-  );
+  const url =
+    "https://api.twelvedata.com/time_series?" +
+    params.toString();
 
+  const response = await fetch(url);
   const data = await response.json();
 
   if (!response.ok || data.status === "error" || data.code) {
-    throw new Error(data.message || "Ошибка Twelve Data");
+    throw new Error(
+      data.message || "Ошибка получения данных Twelve Data"
+    );
   }
 
-  if (!data.values || !data.values.length) {
-    throw new Error("Нет доступных свечей");
+  if (!Array.isArray(data.values) || data.values.length === 0) {
+    throw new Error("Twelve Data не вернул свечи");
   }
 
-  return data.values.reverse().map(c => ({
-    time: c.datetime,
-    open: Number(c.open),
-    high: Number(c.high),
-    low: Number(c.low),
-    close: Number(c.close)
+  return data.values.map(candle => ({
+    time: candle.datetime,
+    open: Number(candle.open),
+    high: Number(candle.high),
+    low: Number(candle.low),
+    close: Number(candle.close)
   }));
 }
 
-function ema(values, period) {
-  const k = 2 / (period + 1);
-  let result = values[0];
+// Экспоненциальная скользящая средняя
+function calculateEMA(values, period) {
+  if (values.length < period) {
+    return null;
+  }
 
-  for (let i = 1; i < values.length; i++) {
-    result = values[i] * k + result * (1 - k);
+  const multiplier = 2 / (period + 1);
+
+  let result = values
+    .slice(0, period)
+    .reduce((sum, value) => sum + value, 0) / period;
+
+  for (let i = period; i < values.length; i++) {
+    result =
+      (values[i] - result) * multiplier + result;
   }
 
   return result;
 }
 
-function rsi(values, period = 14) {
-  if (values.length <= period) return 50;
+// Индекс относительной силы RSI
+function calculateRSI(values, period = 14) {
+  if (values.length <= period) {
+    return 50;
+  }
 
   let gains = 0;
   let losses = 0;
 
-  for (let i = values.length - period; i < values.length; i++) {
+  for (
+    let i = values.length - period;
+    i < values.length;
+    i++
+  ) {
     const change = values[i] - values[i - 1];
 
-    if (change > 0) gains += change;
-    else losses -= change;
+    if (change > 0) {
+      gains += change;
+    } else {
+      losses += Math.abs(change);
+    }
   }
 
-  if (losses === 0) return 100;
+  const averageGain = gains / period;
+  const averageLoss = losses / period;
 
-  const rs = gains / losses;
+  if (averageLoss === 0) {
+    return averageGain === 0 ? 50 : 100;
+  }
+
+  const rs = averageGain / averageLoss;
+
   return 100 - 100 / (1 + rs);
 }
 
-function analyze(candles) {
-  if (candles.length < 30) {
-    throw new Error("Недостаточно данных для анализа");
+// Расчёт MACD
+function calculateMACD(values) {
+  const ema12 = calculateEMA(values, 12);
+  const ema26 = calculateEMA(values, 26);
+
+  if (ema12 === null || ema26 === null) {
+    return 0;
+  }
+
+  return ema12 - ema26;
+}
+
+// Анализ рынка
+function analyzeMarket(candles) {
+  if (!Array.isArray(candles) || candles.length < 30) {
+    throw new Error("Недостаточно свечей для анализа");
   }
 
   const closes = candles.map(c => c.close);
 
-  const ema9 = ema(closes.slice(-40), 9);
-  const ema21 = ema(closes.slice(-60), 21);
-  const rsiValue = rsi(closes);
-
-  const macd = ema(closes, 12) - ema(closes, 26);
+  const ema9 = calculateEMA(closes, 9);
+  const ema21 = calculateEMA(closes, 21);
+  const rsi = calculateRSI(closes, 14);
+  const macd = calculateMACD(closes);
 
   const last = candles[candles.length - 1];
   const previous = candles[candles.length - 2];
@@ -120,8 +162,8 @@ function analyze(candles) {
   if (ema9 > ema21) buy++;
   if (ema9 < ema21) sell++;
 
-  if (rsiValue > 50 && rsiValue < 70) buy++;
-  if (rsiValue < 50 && rsiValue > 30) sell++;
+  if (rsi > 50 && rsi < 70) buy++;
+  if (rsi < 50 && rsi > 30) sell++;
 
   if (macd > 0) buy++;
   if (macd < 0) sell++;
@@ -132,52 +174,71 @@ function analyze(candles) {
   if (last.close > previous.close) buy++;
   if (last.close < previous.close) sell++;
 
-  let direction = "NO SIGNAL";
+  let direction = "WAITING";
 
-  if (buy >= 4 && buy > sell) direction = "BUY";
-  if (sell >= 4 && sell > buy) direction = "SELL";
+  if (buy >= 4 && buy > sell) {
+    direction = "BUY";
+  } else if (sell >= 4 && sell > buy) {
+    direction = "SELL";
+  }
+
+  const agreement = Math.round(
+    (Math.max(buy, sell) / 5) * 100
+  );
 
   return {
     direction,
-    agreement: Math.round(
-      Math.max(buy, sell) / 5 * 100
-    ),
+    agreement,
     price: last.close,
     candleTime: last.time,
+
     indicators: {
       ema9: Number(ema9.toFixed(6)),
       ema21: Number(ema21.toFixed(6)),
-      rsi: Number(rsiValue.toFixed(2)),
+      rsi: Number(rsi.toFixed(2)),
       macd: Number(macd.toFixed(6))
     },
+
+    scores: {
+      buy,
+      sell
+    },
+
     explanation:
       direction === "BUY"
-        ? "Преобладают признаки восходящего движения"
+        ? "Большинство проверенных условий указывает вверх"
         : direction === "SELL"
-        ? "Преобладают признаки нисходящего движения"
-        : "Недостаточно подтверждений направления"
+        ? "Большинство проверенных условий указывает вниз"
+        : "Недостаточно подтверждений для направления"
   };
 }
 
+// Проверка сервера
 app.get("/api/health", (req, res) => {
   res.json({
     success: true,
     status: "online",
+    service: "POCKET AI ULTIMATE PRO",
     provider: "Twelve Data",
     apiKeyConfigured: Boolean(API_KEY)
   });
 });
 
+// Список валютных пар
 app.get("/api/symbols", (req, res) => {
   res.json({
     success: true,
+    provider: "Twelve Data",
+    market: "Forex",
     symbols: PAIRS
   });
 });
 
+// Получение свечей
 app.get("/api/candles", async (req, res) => {
   try {
-    const { symbol, tf = "1" } = req.query;
+    const symbol = String(req.query.symbol || "").toUpperCase();
+    const tf = String(req.query.tf || "1");
     const interval = INTERVALS[tf];
 
     if (!PAIRS.includes(symbol)) {
@@ -198,11 +259,16 @@ app.get("/api/candles", async (req, res) => {
 
     res.json({
       success: true,
+      provider: "Twelve Data",
+      market: "Forex",
       symbol,
+      timeframe: interval,
       candles
     });
 
   } catch (error) {
+    console.error("CANDLES ERROR:", error.message);
+
     res.status(502).json({
       success: false,
       error: error.message
@@ -210,9 +276,11 @@ app.get("/api/candles", async (req, res) => {
   }
 });
 
+// Анализ рынка
 app.get("/api/analyze", async (req, res) => {
   try {
-    const { symbol, tf = "1" } = req.query;
+    const symbol = String(req.query.symbol || "").toUpperCase();
+    const tf = String(req.query.tf || "1");
     const interval = INTERVALS[tf];
 
     if (!PAIRS.includes(symbol)) {
@@ -230,7 +298,7 @@ app.get("/api/analyze", async (req, res) => {
     }
 
     const candles = await getMarketData(symbol, interval);
-    const result = analyze(candles);
+    const result = analyzeMarket(candles);
 
     res.json({
       success: true,
@@ -238,10 +306,13 @@ app.get("/api/analyze", async (req, res) => {
       market: "Forex",
       symbol,
       timeframe: interval,
+      candleCount: candles.length,
       ...result
     });
 
   } catch (error) {
+    console.error("ANALYZE ERROR:", error.message);
+
     res.status(502).json({
       success: false,
       error: error.message
@@ -249,12 +320,25 @@ app.get("/api/analyze", async (req, res) => {
   }
 });
 
-app.get("*", (req, res) => {
+// Главная страница
+app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
+// Обработка остальных адресов
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    error: "Маршрут не найден"
+  });
+});
+
+// Запуск
 app.listen(PORT, () => {
+  console.log("--------------------------------");
   console.log("POCKET AI ONLINE");
   console.log("PROVIDER: TWELVE DATA");
   console.log("API KEY:", Boolean(API_KEY));
+  console.log("PORT:", PORT);
+  console.log("--------------------------------");
 });
