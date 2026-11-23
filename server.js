@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 
 const settings = require("./config/settings");
 const { getMarketData } = require("./services/market");
@@ -13,17 +14,28 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 
-// =====================================
-// ГЛАВНАЯ СТРАНИЦА
-// =====================================
+// ======================================
+// MINI APP — ГЛАВНАЯ СТРАНИЦА
+// ======================================
+
+const indexPath = path.join(__dirname, "index.html");
 
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
+    if (!fs.existsSync(indexPath)) {
+        return res.status(500).send(
+            "Ошибка: файл index.html не найден в корне проекта."
+        );
+    }
+
+    res.sendFile(indexPath);
 });
 
-// =====================================
-// ПРОВЕРКА СЕРВЕРА
-// =====================================
+// Статические файлы Mini App
+app.use(express.static(__dirname));
+
+// ======================================
+// HEALTH CHECK
+// ======================================
 
 app.get("/api/health", (req, res) => {
     res.json({
@@ -35,9 +47,9 @@ app.get("/api/health", (req, res) => {
     });
 });
 
-// =====================================
-// СПИСОК ВАЛЮТНЫХ ПАР
-// =====================================
+// ======================================
+// ВАЛЮТНЫЕ ПАРЫ
+// ======================================
 
 app.get("/api/symbols", (req, res) => {
     try {
@@ -47,7 +59,7 @@ app.get("/api/symbols", (req, res) => {
 
         const symbols = settings.markets[marketType];
 
-        if (!symbols) {
+        if (!Array.isArray(symbols)) {
             return res.status(400).json({
                 success: false,
                 error: "Неизвестный тип рынка"
@@ -62,18 +74,18 @@ app.get("/api/symbols", (req, res) => {
         });
 
     } catch (error) {
-        console.error("SYMBOLS ERROR:", error.message);
+        console.error("SYMBOLS ERROR:", error);
 
         res.status(500).json({
             success: false,
-            error: error.message
+            error: "Не удалось получить список валют"
         });
     }
 });
 
-// =====================================
-// СПИСОК ТАЙМФРЕЙМОВ
-// =====================================
+// ======================================
+// ТАЙМФРЕЙМЫ
+// ======================================
 
 app.get("/api/timeframes", (req, res) => {
     res.json({
@@ -82,9 +94,9 @@ app.get("/api/timeframes", (req, res) => {
     });
 });
 
-// =====================================
+// ======================================
 // АНАЛИЗ РЫНКА
-// =====================================
+// ======================================
 
 app.post("/api/analyze", async (req, res) => {
     try {
@@ -101,11 +113,10 @@ app.post("/api/analyze", async (req, res) => {
             });
         }
 
-        const type = String(marketType).toUpperCase();
         const symbol = String(pair).trim();
+        const type = String(marketType).toUpperCase();
         const tf = String(timeframe).trim();
 
-        // Проверка типа рынка
         if (!settings.markets[type]) {
             return res.status(400).json({
                 success: false,
@@ -113,17 +124,15 @@ app.post("/api/analyze", async (req, res) => {
             });
         }
 
-        // Проверка валютной пары
         if (!settings.markets[type].includes(symbol)) {
             return res.status(400).json({
                 success: false,
-                error: "Валютная пара отсутствует в списке",
+                error: "Валютная пара не найдена",
                 received: symbol,
                 available: settings.markets[type]
             });
         }
 
-        // Проверка таймфрейма
         if (!settings.timeframes[tf]) {
             return res.status(400).json({
                 success: false,
@@ -133,14 +142,12 @@ app.post("/api/analyze", async (req, res) => {
             });
         }
 
-        console.log("--------------------------------");
-        console.log("NEW MARKET ANALYSIS");
+        console.log("========== NEW ANALYSIS ==========");
         console.log("PAIR:", symbol);
         console.log("MARKET:", type);
         console.log("TIMEFRAME:", tf);
-        console.log("--------------------------------");
 
-        // Получение рыночных данных
+        // Получаем рыночные данные
         const marketData = await getMarketData({
             pair: symbol,
             marketType: type,
@@ -148,21 +155,24 @@ app.post("/api/analyze", async (req, res) => {
         });
 
         if (!marketData) {
-            throw new Error("OTCharts не вернул рыночные данные");
+            throw new Error("Рыночные данные не получены");
         }
 
-        // Анализ технических индикаторов и ИИ
+        // Запускаем анализ
         const result = await analyzeMarket(marketData);
 
         if (!result) {
-            throw new Error("Анализатор не вернул результат");
+            throw new Error("Анализ не вернул результат");
         }
 
-        console.log("ANALYSIS COMPLETED:", result.signal);
+        console.log("ANALYSIS COMPLETED");
 
         return res.json({
             success: true,
-            ...result
+            pair: symbol,
+            marketType: type,
+            timeframe: tf,
+            result
         });
 
     } catch (error) {
@@ -170,14 +180,14 @@ app.post("/api/analyze", async (req, res) => {
 
         return res.status(500).json({
             success: false,
-            error: error.message || "Ошибка анализа рынка"
+            error: error.message || "Ошибка анализа"
         });
     }
 });
 
-// =====================================
-// НЕИЗВЕСТНЫЕ АДРЕСА
-// =====================================
+// ======================================
+// 404
+// ======================================
 
 app.use((req, res) => {
     res.status(404).json({
@@ -187,9 +197,9 @@ app.use((req, res) => {
     });
 });
 
-// =====================================
-// ГЛОБАЛЬНАЯ ОБРАБОТКА ОШИБОК
-// =====================================
+// ======================================
+// ОБРАБОТКА ОШИБОК
+// ======================================
 
 app.use((error, req, res, next) => {
     console.error("SERVER ERROR:", error);
@@ -204,16 +214,17 @@ app.use((error, req, res, next) => {
     });
 });
 
-// =====================================
-// ЗАПУСК СЕРВЕРА
-// =====================================
+// ======================================
+// ЗАПУСК
+// ======================================
 
-const PORT = process.env.PORT || settings.server.port || 3000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, "0.0.0.0", () => {
-    console.log("================================");
+    console.log("==================================");
     console.log("POCKET AI ULTIMATE PRO");
-    console.log("SERVER STATUS: RUNNING");
+    console.log("SERVER: ONLINE");
     console.log("PORT:", PORT);
-    console.log("================================");
+    console.log("INDEX:", indexPath);
+    console.log("==================================");
 });
