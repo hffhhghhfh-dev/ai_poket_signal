@@ -1,15 +1,16 @@
-<!DOCTYPE html><html lang="ru">
+<!DOCTYPE html>
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="theme-color" content="#080d18">
-<title>POCKET AI ULTIMATE PRO</title><script src="https://telegram.org/js/telegram-web-app.js"></script><style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+<title>POCKET AI ULTIMATE PRO</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+<style>
 :root {
     --bg:#080d18;
     --panel:#101a2b;
-    --panel2:#142137;
     --border:#22334d;
     --text:#edf4ff;
     --muted:#8293ad;
@@ -28,7 +29,7 @@
 body {
     background:var(--bg);
     color:var(--text);
-    font-family:Inter,sans-serif;
+    font-family:Arial,sans-serif;
     padding:16px;
     max-width:600px;
     margin:auto;
@@ -38,7 +39,7 @@ body {
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:24px;
+    margin-bottom:22px;
 }
 
 .logo {
@@ -55,13 +56,11 @@ body {
     display:grid;
     place-items:center;
     font-size:22px;
-    box-shadow:0 0 25px #087cff55;
 }
 
 .logo h1 {
     font-size:15px;
     font-weight:900;
-    letter-spacing:.5px;
 }
 
 .logo small {
@@ -72,50 +71,29 @@ body {
 
 .status {
     font-size:10px;
-    color:var(--green);
-    background:#00e6a014;
-    border:1px solid #00e6a044;
-    padding:8px 10px;
+    color:var(--gold);
+    padding:8px;
     border-radius:20px;
-}
-
-.status:before {
-    content:"●";
-    margin-right:6px;
+    background:#ffc85714;
 }
 
 .hero {
-    background:linear-gradient(135deg,#142c4b,#101a2b 70%);
+    background:linear-gradient(135deg,#142c4b,#101a2b);
     border:1px solid #28476d;
     padding:20px;
     border-radius:20px;
     margin-bottom:20px;
-    position:relative;
-    overflow:hidden;
-}
-
-.hero:after {
-    content:"";
-    position:absolute;
-    width:180px;
-    height:180px;
-    background:#087cff20;
-    filter:blur(50px);
-    right:-50px;
-    top:-70px;
 }
 
 .hero-label {
     color:#8da9cb;
     font-size:10px;
     letter-spacing:2px;
-    font-weight:700;
 }
 
 .hero h2 {
     font-size:23px;
     margin-top:10px;
-    font-weight:900;
 }
 
 .hero p {
@@ -128,7 +106,6 @@ body {
 .section-title {
     font-size:12px;
     font-weight:800;
-    letter-spacing:1px;
     margin:22px 0 12px;
     color:#c5d4e9;
 }
@@ -156,11 +133,6 @@ select {
     border:1px solid #2b405f;
     border-radius:11px;
     font-size:13px;
-    outline:none;
-}
-
-select:focus {
-    border-color:var(--blue);
 }
 
 .grid {
@@ -190,7 +162,6 @@ select:focus {
     background:#087cff20;
     border-color:var(--blue);
     color:#65a6ff;
-    box-shadow:0 0 15px #087cff20;
 }
 
 .analyze-btn {
@@ -203,36 +174,22 @@ select:focus {
     color:white;
     font-size:14px;
     font-weight:900;
-    letter-spacing:1px;
     cursor:pointer;
-    box-shadow:0 7px 25px #087cff30;
-    transition:.2s;
-}
-
-.analyze-btn:active {
-    transform:scale(.98);
 }
 
 .analyze-btn:disabled {
     opacity:.6;
-    cursor:wait;
 }
 
 .result {
     display:none;
-    animation:appear .4s ease;
-}
-
-@keyframes appear {
-    from {opacity:0;transform:translateY(10px)}
-    to {opacity:1;transform:translateY(0)}
 }
 
 .signal-box {
     text-align:center;
     padding:24px 15px;
     border-radius:16px;
-    background:#101a2b;
+    background:var(--panel);
     border:1px solid var(--border);
     margin-bottom:14px;
 }
@@ -243,9 +200,9 @@ select:focus {
     margin:12px 0;
 }
 
-.signal.buy {color:var(--green)}
-.signal.sell {color:var(--red)}
-.signal.none {color:var(--gold)}
+.buy {color:var(--green)}
+.sell {color:var(--red)}
+.none {color:var(--gold)}
 
 .signal-desc {
     color:var(--muted);
@@ -270,24 +227,25 @@ select:focus {
     height:100%;
     width:0%;
     background:linear-gradient(90deg,#087cff,#00e6a0);
-    transition:width .7s;
+    transition:width .5s;
 }
 
-.indicator {
+.indicator,.info-row,.history-item {
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:13px 0;
-    border-bottom:1px solid #22334d;
+    padding:12px 0;
+    border-bottom:1px solid var(--border);
     font-size:11px;
 }
 
-.indicator:last-child {
+.indicator:last-child,
+.info-row:last-child {
     border:0;
 }
 
-.indicator span:first-child {
-    color:#b7c6dc;
+.info-row span:first-child {
+    color:var(--muted);
 }
 
 .badge {
@@ -297,34 +255,28 @@ select:focus {
     font-weight:800;
 }
 
-.badge.buy {background:#00e6a018;color:var(--green)}
-.badge.sell {background:#ff557718;color:var(--red)}
-.badge.neutral {background:#ffc85718;color:var(--gold)}
-
-.info-row {
-    display:flex;
-    justify-content:space-between;
-    padding:11px 0;
-    border-bottom:1px solid #22334d;
-    font-size:11px;
+.badge.buy {
+    background:#00e6a018;
 }
 
-.info-row:last-child {border:0}
-.info-row span:first-child {color:var(--muted)}
-
-.history-item {
-    display:flex;
-    justify-content:space-between;
-    padding:12px 0;
-    border-bottom:1px solid var(--border);
-    font-size:11px;
+.badge.sell {
+    background:#ff557718;
 }
 
-.footer {
-    text-align:center;
-    color:#53647e;
-    font-size:9px;
-    padding:25px 0 12px;
+.badge.neutral {
+    background:#ffc85718;
+    color:var(--gold);
+}
+
+.error {
+    display:none;
+    color:var(--red);
+    font-size:12px;
+    padding:12px;
+    background:#ff557711;
+    border-radius:10px;
+    margin-top:12px;
+    line-height:1.6;
 }
 
 .loader {
@@ -339,23 +291,26 @@ select:focus {
     margin-right:8px;
 }
 
-@keyframes spin {to{transform:rotate(360deg)}}
+@keyframes spin {
+    to {transform:rotate(360deg)}
+}
 
-.error {
-    display:none;
-    color:var(--red);
-    font-size:11px;
-    padding:12px;
-    background:#ff557711;
-    border-radius:10px;
-    margin-top:12px;
+.footer {
+    text-align:center;
+    color:#53647e;
+    font-size:9px;
+    padding:25px 0 12px;
 }
 
 @media(max-width:360px) {
     body {padding:11px}
-    .tf-grid {grid-template-columns:repeat(2,1fr)}
 }
-</style></head><body><header class="header">
+</style>
+</head>
+
+<body>
+
+<header class="header">
     <div class="logo">
         <div class="logo-icon">◈</div>
         <div>
@@ -364,11 +319,17 @@ select:focus {
         </div>
     </div>
     <div class="status" id="connection">CONNECTING</div>
-</header><section class="hero">
+</header>
+
+<section class="hero">
     <div class="hero-label">ARTIFICIAL INTELLIGENCE TERMINAL</div>
     <h2>Smart Market Analysis</h2>
-    <p>Интеллектуальная аналитика Pocket Option OTC с использованием технических индикаторов и искусственного интеллекта.</p>
-</section><div class="section-title">01 / ВЫБОР РЫНКА</div><div class="card">
+    <p>Анализ Pocket Option OTC с использованием технических индикаторов и искусственного интеллекта.</p>
+</section>
+
+<div class="section-title">01 / ВЫБОР РЫНКА</div>
+
+<div class="card">
     <div class="grid">
         <div>
             <label>Тип рынка</label>
@@ -377,22 +338,19 @@ select:focus {
                 <option value="REGULAR">REGULAR MARKET</option>
             </select>
         </div>
+
         <div>
             <label>Валютная пара</label>
             <select id="pair">
-                <option value="EUR/USD OTC">EUR/USD OTC</option>
-                <option value="GBP/USD OTC">GBP/USD OTC</option>
-                <option value="USD/JPY OTC">USD/JPY OTC</option>
-                <option value="AUD/USD OTC">AUD/USD OTC</option>
-                <option value="EUR/JPY OTC">EUR/JPY OTC</option>
-                <option value="GBP/JPY OTC">GBP/JPY OTC</option>
-                <option value="USD/CAD OTC">USD/CAD OTC</option>
-                <option value="USD/CHF OTC">USD/CHF OTC</option>
-                <option value="EUR/GBP OTC">EUR/GBP OTC</option>
+                <option value="">Загрузка пар...</option>
             </select>
         </div>
     </div>
-</div><div class="section-title">02 / ТАЙМФРЕЙМ</div><div class="card">
+</div>
+
+<div class="section-title">02 / ТАЙМФРЕЙМ</div>
+
+<div class="card">
     <div class="tf-grid" id="timeframes">
         <button class="tf active" data-value="5s">5 SEC</button>
         <button class="tf" data-value="15s">15 SEC</button>
@@ -404,133 +362,250 @@ select:focus {
         <button class="tf" data-value="15m">15 MIN</button>
         <button class="tf" data-value="20m">20 MIN</button>
         <button class="tf" data-value="30m">30 MIN</button>
-    </div><button class="analyze-btn" id="analyze">
-    ✦ ANALYZE MARKET
-</button>
-
-<div class="error" id="error"></div>
-
-</div><section class="result" id="result"><div class="section-title">03 / AI SIGNAL</div>
-
-<div class="signal-box">
-    <div class="signal-desc">AI MARKET DIRECTION</div>
-    <div class="signal none" id="signal">WAIT</div>
-    <div class="signal-desc" id="signalText">Ожидание результатов анализа</div>
-
-    <div class="confidence" id="confidence">--%</div>
-    <div class="signal-desc">Согласованность направленных индикаторов</div>
-    <div class="bar">
-        <div class="bar-fill" id="confidenceBar"></div>
     </div>
+
+    <button class="analyze-btn" id="analyze">
+        ✦ ANALYZE MARKET
+    </button>
+
+    <div class="error" id="error"></div>
 </div>
 
-<div class="section-title">04 / MARKET INFORMATION</div>
+<section class="result" id="result">
 
-<div class="card">
-    <div class="info-row">
-        <span>Валютная пара</span>
-        <strong id="resultPair">--</strong>
-    </div>
-    <div class="info-row">
-        <span>Таймфрейм</span>
-        <strong id="resultTF">--</strong>
-    </div>
-    <div class="info-row">
-        <span>Текущая цена</span>
-        <strong id="price">--</strong>
-    </div>
-    <div class="info-row">
-        <span>Тренд</span>
-        <strong id="trend">--</strong>
-    </div>
-    <div class="info-row">
-        <span>Индикаторы BUY</span>
-        <strong id="buyCount">--</strong>
-    </div>
-    <div class="info-row">
-        <span>Индикаторы SELL</span>
-        <strong id="sellCount">--</strong>
-    </div>
-</div>
+    <div class="section-title">03 / AI SIGNAL</div>
 
-<div class="section-title">05 / TEN INDICATORS</div>
+    <div class="signal-box">
+        <div class="signal-desc">AI MARKET DIRECTION</div>
 
-<div class="card" id="indicators"></div>
+        <div class="signal none" id="signal">WAIT</div>
 
-<div class="section-title">06 / AI EXPLANATION</div>
+        <div class="signal-desc" id="signalText">
+            Ожидание анализа
+        </div>
 
-<div class="card">
-    <p id="explanation" style="font-size:12px;line-height:1.8;color:#aabbd1">
-        Ожидание анализа...
+        <div class="confidence" id="confidence">--%</div>
+
+        <div class="signal-desc">Уверенность модели</div>
+
+        <div class="bar">
+            <div class="bar-fill" id="confidenceBar"></div>
+        </div>
+    </div>
+
+    <div class="section-title">04 / MARKET INFORMATION</div>
+
+    <div class="card">
+        <div class="info-row">
+            <span>Валютная пара</span>
+            <strong id="resultPair">--</strong>
+        </div>
+
+        <div class="info-row">
+            <span>Таймфрейм</span>
+            <strong id="resultTF">--</strong>
+        </div>
+
+        <div class="info-row">
+            <span>Текущая цена</span>
+            <strong id="price">--</strong>
+        </div>
+
+        <div class="info-row">
+            <span>Тренд</span>
+            <strong id="trend">--</strong>
+        </div>
+
+        <div class="info-row">
+            <span>BUY</span>
+            <strong id="buyCount">--</strong>
+        </div>
+
+        <div class="info-row">
+            <span>SELL</span>
+            <strong id="sellCount">--</strong>
+        </div>
+    </div>
+
+    <div class="section-title">05 / INDICATORS</div>
+
+    <div class="card" id="indicators"></div>
+
+    <div class="section-title">06 / AI EXPLANATION</div>
+
+    <div class="card">
+        <p id="explanation" style="font-size:12px;line-height:1.8;color:#aabbd1">
+            Ожидание анализа...
+        </p>
+    </div>
+
+</section>
+
+<div class="section-title">07 / ANALYSIS HISTORY</div>
+
+<div class="card" id="history">
+    <p style="color:#8293ad;font-size:11px">
+        История пока пуста.
     </p>
 </div>
 
-</section><div class="section-title">07 / ANALYSIS HISTORY</div><div class="card" id="history">
-    <p style="color:#8293ad;font-size:11px">История пока пуста.</p>
-</div><footer class="footer">
+<footer class="footer">
     POCKET AI ULTIMATE PRO © 2026<br>
     ANALYTICAL SYSTEM • NOT FINANCIAL ADVICE
-</footer><script>
+</footer>
+
+<script>
 const tg = window.Telegram?.WebApp;
 
-if(tg) {
+if (tg) {
     tg.ready();
     tg.expand();
 }
+
+const API = "";
 
 let selectedTF = "5s";
 let historyData = [];
 
 const $ = id => document.getElementById(id);
 
-document.querySelectorAll(".tf").forEach(btn => {
-    btn.addEventListener("click", () => {
-        document.querySelectorAll(".tf").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        selectedTF = btn.dataset.value;
-    });
-});
-
 function setConnection(online) {
-    $("connection").textContent = online ? "SERVER ONLINE" : "SERVER OFFLINE";
-    $("connection").style.color = online ? "#00e6a0" : "#ff5577";
+    $("connection").textContent =
+        online ? "SERVER ONLINE" : "SERVER OFFLINE";
+
+    $("connection").style.color =
+        online ? "#00e6a0" : "#ff5577";
 }
 
 async function requestAPI(path, options = {}) {
-    const response = await fetch(path, {
+    const response = await fetch(API + path, {
         ...options,
         headers: {
-            "Content-Type":"application/json",
+            "Content-Type": "application/json",
             ...(options.headers || {})
         }
     });
 
-    const data = await response.json();
+    let data;
 
-    if(!response.ok) {
+    try {
+        data = await response.json();
+    } catch {
+        throw new Error("Сервер вернул неправильный ответ");
+    }
+
+    if (!response.ok || data.success === false) {
         throw new Error(data.error || "Ошибка сервера");
     }
 
     return data;
 }
 
+function readablePair(symbol) {
+    if (typeof symbol !== "string") return "";
+
+    if (symbol.endsWith("_otc")) {
+        const pair = symbol.replace("_otc", "");
+        return pair.slice(0,3) + "/" + pair.slice(3) + " OTC";
+    }
+
+    if (symbol.length === 6) {
+        return symbol.slice(0,3) + "/" + symbol.slice(3);
+    }
+
+    return symbol;
+}
+
+// Получение пар непосредственно с сервера
+async function loadSymbols() {
+    const type = $("marketType").value;
+    const pairSelect = $("pair");
+
+    pairSelect.innerHTML = "<option>Загрузка...</option>";
+    pairSelect.disabled = true;
+
+    try {
+        const data = await requestAPI(
+            "/api/symbols?marketType=" + encodeURIComponent(type)
+        );
+
+        if (!Array.isArray(data.symbols) || !data.symbols.length) {
+            throw new Error("Список валютных пар пуст");
+        }
+
+        pairSelect.innerHTML = "";
+
+        data.symbols.forEach(item => {
+            const symbol =
+                typeof item === "string"
+                    ? item
+                    : item.symbol;
+
+            if (!symbol) return;
+
+            const option = document.createElement("option");
+
+            // ВАЖНО: сервер получает оригинальный symbol
+            option.value = symbol;
+
+            option.textContent =
+                (typeof item === "object" && item.name)
+                    ? item.name
+                    : readablePair(symbol);
+
+            pairSelect.appendChild(option);
+        });
+
+        if (!pairSelect.options.length) {
+            throw new Error("Не удалось загрузить пары");
+        }
+
+        pairSelect.disabled = false;
+
+    } catch (error) {
+        pairSelect.innerHTML =
+            '<option value="">Ошибка загрузки</option>';
+
+        throw error;
+    }
+}
+
+// Проверка сервера
 async function checkServer() {
     try {
         await requestAPI("/api/health");
         setConnection(true);
-    } catch(e) {
+    } catch (error) {
         setConnection(false);
     }
 }
 
+// Таймфреймы
+document.querySelectorAll(".tf").forEach(button => {
+    button.addEventListener("click", () => {
+        document.querySelectorAll(".tf").forEach(item => {
+            item.classList.remove("active");
+        });
+
+        button.classList.add("active");
+        selectedTF = button.dataset.value;
+    });
+});
+
+// Отображение индикаторов
 function renderIndicators(indicators) {
     const container = $("indicators");
     container.innerHTML = "";
 
+    if (!indicators || typeof indicators !== "object") {
+        container.textContent = "Данные индикаторов отсутствуют";
+        return;
+    }
+
     const names = {
         RSI:"RSI",
         MACD:"MACD",
-        EMA:"EMA 9/21",
+        EMA:"EMA",
         EMA200:"EMA 50/200",
         BB:"Bollinger Bands",
         STOCH:"Stochastic RSI",
@@ -540,11 +615,14 @@ function renderIndicators(indicators) {
         ATR:"ATR"
     };
 
-    Object.entries(indicators || {}).forEach(([key,value]) => {
-        const direction = String(value.signal || "NEUTRAL").toUpperCase();
+    Object.entries(indicators).forEach(([key, value]) => {
+        const direction = String(
+            value?.signal || "NEUTRAL"
+        ).toUpperCase();
 
-        const cls = direction === "BUY" ? "buy" :
-                    direction === "SELL" ? "sell" : "neutral";
+        const cls =
+            direction === "BUY" ? "buy" :
+            direction === "SELL" ? "sell" : "neutral";
 
         const row = document.createElement("div");
         row.className = "indicator";
@@ -556,14 +634,15 @@ function renderIndicators(indicators) {
         badge.className = "badge " + cls;
         badge.textContent = direction;
 
-        row.append(name,badge);
+        row.append(name, badge);
         container.appendChild(row);
     });
 }
 
+// История
 function addHistory(data) {
     historyData.unshift(data);
-    historyData = historyData.slice(0,10);
+    historyData = historyData.slice(0, 10);
 
     $("history").innerHTML = "";
 
@@ -572,113 +651,143 @@ function addHistory(data) {
         row.className = "history-item";
 
         const left = document.createElement("span");
-        left.textContent = item.pair + " • " + item.timeframe;
+        left.textContent =
+            item.pair + " • " + item.timeframe;
 
         const right = document.createElement("strong");
         right.textContent = item.signal;
-        right.style.color = item.signal === "BUY" ? "#00e6a0" :
-                            item.signal === "SELL" ? "#ff5577" : "#ffc857";
 
-        row.append(left,right);
+        right.style.color =
+            item.signal === "BUY" ? "#00e6a0" :
+            item.signal === "SELL" ? "#ff5577" :
+            "#ffc857";
+
+        row.append(left, right);
         $("history").appendChild(row);
     });
 }
 
+// Отображение результата
 function displayResult(data) {
-    const signal = String(data.signal || "NO SIGNAL").toUpperCase();
+    const signal = String(
+        data.signal || "NO SIGNAL"
+    ).toUpperCase();
 
     $("result").style.display = "block";
 
     $("signal").textContent = signal;
-    $("signal").className = "signal " +
+
+    $("signal").className =
+        "signal " +
         (signal === "BUY" ? "buy" :
          signal === "SELL" ? "sell" : "none");
 
     $("signalText").textContent =
         data.signalReason || "Результат технического анализа";
 
-    const confidence = Math.min(100,Math.max(0,Number(data.confidence) || 0));
+    const confidence = Math.max(
+        0,
+        Math.min(100, Number(data.confidence) || 0)
+    );
 
     $("confidence").textContent = confidence + "%";
     $("confidenceBar").style.width = confidence + "%";
 
-    $("resultPair").textContent = data.pair || "--";
-    $("resultTF").textContent = data.timeframe || "--";
+    $("resultPair").textContent =
+        readablePair(data.pair) || data.pair || "--";
+
+    $("resultTF").textContent = data.timeframe || selectedTF;
     $("price").textContent = data.price ?? "--";
     $("trend").textContent = data.trend || "--";
     $("buyCount").textContent = data.buyCount ?? "--";
     $("sellCount").textContent = data.sellCount ?? "--";
-    $("explanation").textContent = data.explanation || "Нет дополнительного объяснения.";
+
+    $("explanation").textContent =
+        data.explanation || "Нет дополнительного объяснения.";
 
     renderIndicators(data.indicators);
 
     addHistory({
-        pair:data.pair,
-        timeframe:data.timeframe,
+        pair: readablePair(data.pair) || data.pair,
+        timeframe: data.timeframe || selectedTF,
         signal
     });
 
     $("result").scrollIntoView({
-        behavior:"smooth",
-        block:"start"
+        behavior: "smooth",
+        block: "start"
     });
 }
 
+// Анализ рынка
 $("analyze").addEventListener("click", async () => {
     const button = $("analyze");
 
+    const pair = $("pair").value;
+    const marketType = $("marketType").value;
+
+    if (!pair) {
+        $("error").textContent = "Выберите валютную пару";
+        $("error").style.display = "block";
+        return;
+    }
+
     button.disabled = true;
-    button.innerHTML = '<span class="loader"></span> ANALYZING MARKET...';
+    button.innerHTML =
+        '<span class="loader"></span> ANALYZING MARKET...';
+
     $("error").style.display = "none";
 
     try {
-        const pair = $("pair").value;
-        const marketType = $("marketType").value;
-
         const data = await requestAPI("/api/analyze", {
-            method:"POST",
-            body:JSON.stringify({
-                pair,
-                marketType,
-                timeframe:selectedTF
+            method: "POST",
+            body: JSON.stringify({
+                pair: pair,
+                marketType: marketType,
+                timeframe: selectedTF
             })
         });
 
         displayResult(data);
         setConnection(true);
 
-    } catch(error) {
+    } catch (error) {
         $("error").textContent = error.message;
         $("error").style.display = "block";
-        setConnection(false);
     } finally {
         button.disabled = false;
         button.textContent = "✦ ANALYZE MARKET";
     }
 });
 
+// Изменение рынка
 $("marketType").addEventListener("change", async () => {
+    $("error").style.display = "none";
+
     try {
-        const type = $("marketType").value;
-        const data = await requestAPI("/api/symbols?marketType=" + type);
-
-        if(Array.isArray(data.symbols) && data.symbols.length) {
-            const pair = $("pair");
-            pair.innerHTML = "";
-
-            data.symbols.forEach(symbol => {
-                const option = document.createElement("option");
-                option.value = symbol.symbol || symbol;
-                option.textContent = symbol.name || symbol.symbol || symbol;
-                pair.appendChild(option);
-            });
-        }
-    } catch(e) {
-        console.error("Symbols:",e.message);
+        await loadSymbols();
+    } catch (error) {
+        $("error").textContent = error.message;
+        $("error").style.display = "block";
     }
 });
 
-checkServer();
-setInterval(checkServer,15000);
-</script></body>
+// Запуск
+async function init() {
+    await checkServer();
+
+    try {
+        await loadSymbols();
+    } catch (error) {
+        $("error").textContent = error.message;
+        $("error").style.display = "block";
+    }
+}
+
+init();
+
+setInterval(checkServer, 15000);
+</script>
+
+</body>
 </html>
