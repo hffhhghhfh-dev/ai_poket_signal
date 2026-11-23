@@ -1,99 +1,116 @@
 const axios = require("axios");
-const settings = require("../config/settings");
 
-const OPENAI_URL = "https://api.openai.com/v1/responses";
+const API_KEY = process.env.GEMINI_API_KEY;
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 
 async function analyzeWithAI(marketData) {
-  if (!settings.openai.apiKey) {
-    throw new Error("OPENAI_API_KEY не настроен");
+  if (!API_KEY) {
+    throw new Error("GEMINI_API_KEY не настроен");
   }
 
   if (!marketData || !marketData.indicators) {
-    throw new Error("Недостаточно данных для анализа");
+    throw new Error("Недостаточно рыночных данных");
   }
 
   const instructions = `
-Ты — профессиональный аналитический ИИ для финансовых рынков.
+Ты — профессиональный аналитический ИИ.
 
-Твоя задача:
-1. Анализировать предоставленные рыночные данные.
-2. Определять направление тренда.
-3. Оценивать RSI, MACD, EMA, Bollinger Bands,
-   Stochastic RSI, ADX, CCI и Williams %R.
-4. Учитывать Price Action и свечные модели.
-5. Определять потенциальное направление движения.
+Проанализируй предоставленные данные рынка.
 
-Правила:
-- Не придумывай отсутствующие данные.
-- Не обещай прибыль.
-- Не выдавай вероятность за гарантированный результат.
-- Если сигналы противоречат друг другу, выбирай NO SIGNAL.
-- Не используй ATR как самостоятельный сигнал направления.
-- Учитывай, что OTC-рынок может отличаться от обычного рынка.
+Учитывай:
+1. RSI
+2. MACD
+3. EMA 20, 50, 200
+4. Bollinger Bands
+5. Stochastic RSI
+6. ADX
+7. CCI
+8. Williams %R
+9. ATR
+10. Price Action
 
-Верни результат в JSON:
+Дополнительно анализируй:
+- Тренд рынка
+- Последние свечи
+- Поддержку и сопротивление
+- Свечные модели
+- Силу покупателей и продавцов
+
+Выбери один сигнал:
+BUY, SELL или NO SIGNAL.
+
+Не выдумывай отсутствующие данные.
+Если индикаторы противоречат друг другу, выбирай NO SIGNAL.
+Не обещай гарантированную прибыль.
+
+Верни только JSON:
+
 {
-  "signal": "BUY или SELL или NO SIGNAL",
-  "confidence": 0,
-  "trend": "UPTREND или DOWNTREND или SIDEWAYS",
+  "signal": "BUY",
+  "confidence": 75,
+  "trend": "UPTREND",
   "reason": "Объяснение анализа",
-  "support": "Уровень поддержки или неизвестно",
-  "resistance": "Уровень сопротивления или неизвестно",
-  "risk": "LOW или MEDIUM или HIGH"
+  "support": "Уровень поддержки",
+  "resistance": "Уровень сопротивления",
+  "risk": "MEDIUM"
 }
 
-confidence — оценка силы совпадения сигналов от 0 до 100,
+confidence — оценка согласованности сигналов,
 а не вероятность получения прибыли.
 `;
 
   const response = await axios.post(
-    OPENAI_URL,
+    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
     {
-      model: settings.openai.model,
-      instructions,
-      input: JSON.stringify(marketData),
-      max_output_tokens: 700
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              text:
+                instructions +
+                "\n\nРЫНОЧНЫЕ ДАННЫЕ:\n" +
+                JSON.stringify(marketData)
+            }
+          ]
+        }
+      ],
+      generationConfig: {
+        temperature: 0.2,
+        responseMimeType: "application/json"
+      }
     },
     {
       timeout: 30000,
       headers: {
-        Authorization: `Bearer ${settings.openai.apiKey}`,
+        "x-goog-api-key": API_KEY,
         "Content-Type": "application/json"
       }
     }
   );
 
-  const output = response.data.output || [];
-
-  const text = output
-    .filter(item => item.type === "message")
-    .flatMap(item => item.content || [])
-    .filter(item => item.type === "output_text")
-    .map(item => item.text)
-    .join("\n");
+  const text =
+    response.data.candidates?.[0]?.content?.parts
+      ?.map(part => part.text || "")
+      .join("")
+      .trim();
 
   if (!text) {
-    throw new Error("OpenAI не вернул текст анализа");
+    throw new Error("Gemini не вернул результат");
   }
-
-  const cleaned = text
-    .replace(/^```json\s*/i, "")
-    .replace(/^```\s*/i, "")
-    .replace(/\s*```$/i, "")
-    .trim();
 
   let result;
 
   try {
-    result = JSON.parse(cleaned);
+    result = JSON.parse(text);
   } catch {
-    throw new Error("ИИ вернул некорректный JSON");
+    throw new Error("Gemini вернул неправильный JSON");
   }
 
-  const allowedSignals = ["BUY", "SELL", "NO SIGNAL"];
+  const signals = ["BUY", "SELL", "NO SIGNAL"];
 
-  if (!allowedSignals.includes(result.signal)) {
-    throw new Error("ИИ вернул неизвестный сигнал");
+  if (!signals.includes(result.signal)) {
+    throw new Error("Неизвестный торговый сигнал");
   }
 
   result.confidence = Math.max(
